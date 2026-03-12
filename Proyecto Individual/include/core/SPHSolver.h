@@ -1,0 +1,49 @@
+#pragma once
+
+#include "core/Particle.h"
+#include "core/SpatialHash.h"
+#include "Config.h"
+#include <vector>
+#include <string>
+
+// ============================================================
+// SPHSolver — owns the particle array and executes the pipeline
+//
+// The simulation pipeline per timestep:
+//   1. Build spatial hash (neighbour structure)
+//   2. Compute density & pressure for every particle
+//   3. Compute forces (pressure + viscosity + gravity)
+//   4. Integrate (update velocity & position via Euler/Leapfrog)
+//   5. Enforce boundary conditions
+//
+// Derived classes override the parallel execution strategy.
+// ============================================================
+class SPHSolver {
+public:
+    SPHSolver();
+    virtual ~SPHSolver() = default;
+
+    /// Initialize particles in a "dam break" configuration.
+    void initDamBreak(int numParticles, float domainW, float domainH);
+
+    /// Run one full timestep (calls virtual step methods).
+    void step(float dt);
+
+    /// Access particles (for rendering / metrics).
+    const std::vector<Particle>& particles() const { return particles_; }
+    std::vector<Particle>&       particles()       { return particles_; }
+
+    /// Human-readable model name.
+    virtual std::string modelName() const { return "Base (Sequential)"; }
+
+protected:
+    std::vector<Particle> particles_;
+    SpatialHash           grid_;
+
+    // --- Pipeline stages (overridden for parallelism) ---
+    virtual void buildNeighbourStructure();
+    virtual void computeDensityPressure();
+    virtual void computeForces();
+    virtual void integrate(float dt);
+    virtual void enforceBoundary();
+};

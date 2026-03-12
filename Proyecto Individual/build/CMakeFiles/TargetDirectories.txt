@@ -1,0 +1,5 @@
+/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/build/CMakeFiles/sph_simulation.dir
+/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/build/CMakeFiles/sph_compare.dir
+/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/build/CMakeFiles/sph_benchmark.dir
+/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/build/CMakeFiles/edit_cache.dir
+/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/build/CMakeFiles/rebuild_cache.dir
