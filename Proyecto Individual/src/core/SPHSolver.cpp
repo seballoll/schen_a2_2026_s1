@@ -12,30 +12,40 @@ SPHSolver::SPHSolver()
 // ============================================================
 // initDamBreak — place particles in a rectangular block on the
 // left side of the domain (classic "dam break" scenario).
+//
+// Uses PARTICLE_SPACING for the grid to ensure the density
+// estimate matches REST_DENSITY when the fluid is at rest.
 // ============================================================
 void SPHSolver::initDamBreak(int numParticles, float domainW, float domainH) {
     particles_.clear();
     particles_.reserve(numParticles);
 
-    // Arrange particles in a grid filling ~30% width, ~80% height
-    float blockW = domainW * 0.30f;
-    float blockH = domainH * 0.80f;
-    float startX = domainW * 0.05f;
-    float startY = domainH * 0.10f;
+    // Use the configured spacing so density is well-defined
+    float spacing = Config::PARTICLE_SPACING;
 
-    // Determine spacing
-    float spacing = std::sqrt((blockW * blockH) / static_cast<float>(numParticles));
-    int cols = static_cast<int>(blockW / spacing);
-    int rows = static_cast<int>(blockH / spacing);
+    // Place in a tall column on the left ~25% of the domain
+    // starting a small offset from the wall
+    float startX = spacing;
+    float startY = spacing;
+
+    // How many columns fit in 25% of the domain?
+    int cols = static_cast<int>((domainW * 0.25f) / spacing);
     if (cols < 1) cols = 1;
-    if (rows < 1) rows = 1;
+
+    // How many rows do we need?
+    int rows = (numParticles + cols - 1) / cols;
 
     int placed = 0;
     for (int r = 0; r < rows && placed < numParticles; ++r) {
         for (int c = 0; c < cols && placed < numParticles; ++c) {
-            float x = startX + c * spacing + spacing * 0.5f;
-            float y = startY + r * spacing + spacing * 0.5f;
-            particles_.emplace_back(Vec2{x, y});
+            float x = startX + c * spacing;
+            float y = startY + r * spacing;
+
+            // Small jitter to break perfect lattice symmetry
+            float jx = ((placed * 7 + 3) % 11 - 5) * 0.01f * spacing;
+            float jy = ((placed * 13 + 7) % 11 - 5) * 0.01f * spacing;
+
+            particles_.emplace_back(Vec2{x + jx, y + jy});
             ++placed;
         }
     }
