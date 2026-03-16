@@ -26,13 +26,14 @@
 // Layout:  2×2 grid  (or 1×2 / 1×3 if fewer models selected)
 //
 // Usage:
-//   ./sph_compare [threads] [particles] [models...]
+//   ./sph_compare [threads] [particles] [dt] [models...]
 //
 // Examples:
 //   ./sph_compare 4                      # default: all models, 2000 particles
 //   ./sph_compare 4 5000                 # all models, 5000 particles
-//   ./sph_compare 4 2000 seq fgmt cmp   # just these 3, 2000 particles
-//   ./sph_compare 8 3000 fgmt cgmt      # FGMT vs CGMT, 8 threads, 3000 particles
+//   ./sph_compare 4 2000 0.002           # all models, 2000 particles, dt=0.002
+//   ./sph_compare 4 2000 0.002 seq fgmt cmp   # these 3, dt=0.002
+//   ./sph_compare 8 3000 0.001 fgmt cgmt      # FGMT vs CGMT, dt=0.001
 // ============================================================
 
 struct SimPanel {
@@ -44,11 +45,12 @@ struct SimPanel {
 int main(int argc, char* argv[]) {
     int numThreads   = (argc >= 2) ? std::stoi(argv[1]) : Config::DEFAULT_THREAD_COUNT;
     int numParticles = (argc >= 3) ? std::stoi(argv[2]) : Config::NUM_PARTICLES;
+    float dt         = (argc >= 4) ? std::stof(argv[3]) : Config::DT;
 
-    // Collect model names from args (starting at arg 3), or use defaults
+    // Collect model names from args (starting at arg 4), or use defaults
     std::vector<std::string> modelNames;
-    if (argc >= 4) {
-        for (int i = 3; i < argc; ++i)
+    if (argc >= 5) {
+        for (int i = 4; i < argc; ++i)
             modelNames.push_back(argv[i]);
     } else {
         modelNames = {"seq", "fgmt", "cgmt", "smt", "cmp"};
@@ -120,7 +122,7 @@ int main(int argc, char* argv[]) {
         // Step all models
         for (auto& panel : panels) {
             auto t0 = std::chrono::high_resolution_clock::now();
-            panel.solver->step(Config::DT);
+            panel.solver->step(dt);
             auto t1 = std::chrono::high_resolution_clock::now();
             double thisMs = std::chrono::duration<double, std::milli>(t1 - t0).count();
             panel.msPerStep = (step == 0) ? thisMs : panel.msPerStep * 0.9 + thisMs * 0.1;
@@ -148,7 +150,7 @@ int main(int argc, char* argv[]) {
         // Step counter at bottom
         if (renderer.font().getInfo().family.size() > 0) {
             std::ostringstream oss;
-            oss << "Step " << step << "  |  dt=" << Config::DT << "s";
+            oss << "Step " << step << "  |  dt=" << dt << "s";
             sf::Text stepText;
             stepText.setFont(renderer.font());
             stepText.setCharacterSize(13);

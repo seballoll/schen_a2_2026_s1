@@ -21,7 +21,7 @@
 //   • Parallel efficiency  E(p) = S(p) / p
 //   • Scalability across thread counts
 //
-// Usage:  ./sph_benchmark [numSteps] [numParticles]
+// Usage:  ./sph_benchmark [numSteps] [numParticles] [dt]
 // ============================================================
 
 struct ModelFactory {
@@ -30,12 +30,12 @@ struct ModelFactory {
     std::function<std::unique_ptr<SPHSolver>()> create;
 };
 
-double runModel(SPHSolver& solver, int numSteps, PerformanceMetrics& metrics) {
-    solver.initDamBreak(Config::NUM_PARTICLES, Config::DOMAIN_WIDTH, Config::DOMAIN_HEIGHT);
+double runModel(SPHSolver& solver, int numSteps, int numParticles, float dt, PerformanceMetrics& metrics) {
+    solver.initDamBreak(numParticles, Config::DOMAIN_WIDTH, Config::DOMAIN_HEIGHT);
 
     metrics.startTimer();
     for (int s = 0; s < numSteps; ++s) {
-        solver.step(Config::DT);
+        solver.step(dt);
     }
     return metrics.stopTimer();
 }
@@ -43,6 +43,7 @@ double runModel(SPHSolver& solver, int numSteps, PerformanceMetrics& metrics) {
 int main(int argc, char* argv[]) {
     int numSteps     = (argc >= 2) ? std::stoi(argv[1]) : 200;
     int numParticles = (argc >= 3) ? std::stoi(argv[2]) : Config::NUM_PARTICLES;
+    float dt         = (argc >= 4) ? std::stof(argv[3]) : Config::DT;
 
     unsigned int hwThreads = std::thread::hardware_concurrency();
     std::cout << "╔═══════════════════════════════════════════════════════╗\n";
@@ -94,7 +95,7 @@ int main(int argc, char* argv[]) {
         std::cout << "Running: " << m.name << " (" << m.numThreads << " threads)..." << std::flush;
 
         auto solver = m.create();
-        double elapsed = runModel(*solver, numSteps, metrics);
+    double elapsed = runModel(*solver, numSteps, numParticles, dt, metrics);
 
         if (m.name == "Sequential") {
             seqTime = elapsed;

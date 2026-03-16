@@ -81,7 +81,7 @@ There are **3 executables** — pick the one you need:
 #### 1. `sph_simulation` — Run a single model with visualization
 
 ```bash
-./sph_simulation [model] [threads]
+./sph_simulation [model] [threads] [particles] [dt]
 ```
 
 | Model arg | Description |
@@ -100,6 +100,9 @@ There are **3 executables** — pick the one you need:
 
 # Fine-Grained MT with 4 threads
 ./sph_simulation fgmt 4
+
+# Fine-Grained MT with 4 threads, 5000 particles, dt=0.002
+./sph_simulation fgmt 4 5000 0.002
 
 # Coarse-Grained MT with 8 threads
 ./sph_simulation cgmt 8
@@ -121,7 +124,7 @@ Each window shows a **HUD overlay** with: model name, thread count, step number,
 See multiple models running **simultaneously in a split-screen** window — same initial conditions, same timestep, so you can directly compare behavior and speed.
 
 ```bash
-./sph_compare [threads] [model1 model2 ...]
+./sph_compare [threads] [particles] [dt] [model1 model2 ...]
 ```
 
 **Examples:**
@@ -131,13 +134,13 @@ See multiple models running **simultaneously in a split-screen** window — same
 ./sph_compare 4
 
 # Compare sequential vs FGMT vs CMP
-./sph_compare 4 seq fgmt cmp
+./sph_compare 4 2000 0.002 seq fgmt cmp
 
 # Compare just FGMT vs CGMT at 8 threads
-./sph_compare 8 fgmt cgmt
+./sph_compare 8 2000 0.002 fgmt cgmt
 
 # All parallel models at 4 threads (no sequential)
-./sph_compare 4 fgmt cgmt smt cmp
+./sph_compare 4 2000 0.002 fgmt cgmt smt cmp
 ```
 
 Each panel shows its model label and live ms/step timing.
@@ -147,7 +150,7 @@ Each panel shows its model label and live ms/step timing.
 Runs all models at multiple thread counts, prints a comparison table, and exports to CSV. No window needed.
 
 ```bash
-./sph_benchmark [numSteps] [numParticles]
+./sph_benchmark [numSteps] [numParticles] [dt]
 ```
 
 **Examples:**
@@ -161,6 +164,9 @@ Runs all models at multiple thread counts, prints a comparison table, and export
 
 # Longer run with more particles
 ./sph_benchmark 500 5000
+
+# Longer run, more particles, smaller dt
+./sph_benchmark 500 5000 0.001
 ```
 
 Output: formatted table with execution time, speedup, efficiency for every model × thread count, plus `benchmark_results.csv`.

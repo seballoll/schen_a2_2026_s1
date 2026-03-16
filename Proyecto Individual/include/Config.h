@@ -37,7 +37,7 @@ namespace Config {
     constexpr float  GRAVITY             = -9.81f;       // m/s²
 
     // --- Time Integration ---
-    constexpr float  DT                  = 0.001f;      // timestep (seconds)
+    constexpr float  DT                  = 0.010f;      // timestep (seconds)
     constexpr int    MAX_STEPS           = 50000;        // safety cap
 
     // --- Spatial Hash ---

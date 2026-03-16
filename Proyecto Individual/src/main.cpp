@@ -16,9 +16,11 @@
 // ============================================================
 // main — interactive simulation with SFML visualisation
 //
-// Usage:  ./sph_simulation [model] [threads]
+// Usage:  ./sph_simulation [model] [threads] [particles] [dt]
 //   model:   seq | fgmt | cgmt | smt | cmp   (default: seq)
 //   threads: number of threads for parallel models (default: 4)
+//   particles: number of particles (default: Config::NUM_PARTICLES)
+//   dt: timestep in seconds (default: Config::DT)
 //
 // Examples:
 //   ./sph_simulation              # Sequential (1 thread)
@@ -35,7 +37,7 @@ static void printHelp() {
 ║               SPH FLUID SIMULATION — HELP                   ║
 ╠══════════════════════════════════════════════════════════════╣
 ║                                                              ║
-║  Usage:  ./sph_simulation [model] [threads] [particles]       ║
+║  Usage:  ./sph_simulation [model] [threads] [particles] [dt]  ║
 ║                                                              ║
 ║  Models:                                                     ║
 ║    seq   — Sequential (single-threaded baseline)             ║
@@ -46,11 +48,13 @@ static void printHelp() {
 ║                                                              ║
 ║  Threads:    1-N (default: 4, ignored for 'seq')             ║
 ║  Particles:  number of particles (default: 2000)             ║
+║  dt:         timestep in seconds (default: Config::DT)        ║
 ║                                                              ║
 ║  Examples:                                                   ║
 ║    ./sph_simulation              # Sequential, 2000 particles║
 ║    ./sph_simulation fgmt 4       # FGMT with 4 threads       ║
 ║    ./sph_simulation cmp 8 5000   # CMP, 8 threads, 5000 part.║
+║    ./sph_simulation fgmt 6 2000 0.002  # smaller dt (slower)  ║
 ║                                                              ║
 ║  Visual comparison (all models side-by-side):                ║
 ║    ./sph_compare [threads]       # 2x2 split-screen          ║
@@ -76,6 +80,7 @@ int main(int argc, char* argv[]) {
     std::string modelArg = (argc >= 2) ? argv[1] : "seq";
     int numThreads       = (argc >= 3) ? std::stoi(argv[2]) : Config::DEFAULT_THREAD_COUNT;
     int numParticles     = (argc >= 4) ? std::stoi(argv[3]) : Config::NUM_PARTICLES;
+    float dt             = (argc >= 5) ? std::stof(argv[4]) : Config::DT;
 
     // Create solver based on model choice
     std::unique_ptr<SPHSolver> solver;
@@ -99,7 +104,7 @@ int main(int argc, char* argv[]) {
     std::cout << "║  Model:      " << solver->modelName() << std::endl;
     std::cout << "║  Threads:    " << numThreads << std::endl;
     std::cout << "║  Particles:  " << numParticles << std::endl;
-    std::cout << "║  Timestep:   " << Config::DT << " s" << std::endl;
+    std::cout << "║  Timestep:   " << dt << " s" << std::endl;
     std::cout << "║  Domain:     " << Config::DOMAIN_WIDTH << " x " << Config::DOMAIN_HEIGHT << std::endl;
     std::cout << "╚═══════════════════════════════════════════╝" << std::endl;
     std::cout << "\nClose the window to stop the simulation.\n" << std::endl;
@@ -122,7 +127,7 @@ int main(int argc, char* argv[]) {
         renderer.handleEvents();
 
         auto t0 = std::chrono::high_resolution_clock::now();
-        solver->step(Config::DT);
+    solver->step(dt);
         auto t1 = std::chrono::high_resolution_clock::now();
         ++step;
 

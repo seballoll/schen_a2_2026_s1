@@ -20,6 +20,7 @@ int main(int argc, char* argv[]) {
     std::string modelArg = (argc >= 2) ? argv[1] : "seq";
     int numThreads       = (argc >= 3) ? std::stoi(argv[2]) : Config::DEFAULT_THREAD_COUNT;
     int numSteps         = (argc >= 4) ? std::stoi(argv[3]) : 500;
+    float dt             = (argc >= 5) ? std::stof(argv[4]) : Config::DT;
 
     std::unique_ptr<SPHSolver> solver;
     if (modelArg == "fgmt")      solver = std::make_unique<FineGrainedSolver>(numThreads);
@@ -32,6 +33,7 @@ int main(int argc, char* argv[]) {
     std::cout << "Model:      " << solver->modelName() << std::endl;
     std::cout << "Particles:  " << Config::NUM_PARTICLES << std::endl;
     std::cout << "Steps:      " << numSteps << std::endl;
+    std::cout << "dt:         " << dt << std::endl;
 
     solver->initDamBreak(Config::NUM_PARTICLES, Config::DOMAIN_WIDTH, Config::DOMAIN_HEIGHT);
 
@@ -39,7 +41,7 @@ int main(int argc, char* argv[]) {
     metrics.startTimer();
 
     for (int s = 0; s < numSteps; ++s) {
-        solver->step(Config::DT);
+    solver->step(dt);
         if ((s + 1) % 100 == 0)
             std::cout << "  Step " << (s + 1) << "/" << numSteps << std::endl;
     }
