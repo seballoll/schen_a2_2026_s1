@@ -23,11 +23,23 @@ public:
     SPHSolver();
     virtual ~SPHSolver() = default;
 
+    enum class PipelineStage : int {
+        Neighbours      = 1,
+        DensityPressure = 2,
+        Forces          = 3,
+        Integrate       = 4,
+        Boundary        = 5,
+    };
+
     /// Initialize particles in a "dam break" configuration.
     void initDamBreak(int numParticles, float domainW, float domainH);
 
     /// Run one full timestep (calls virtual step methods).
     void step(float dt);
+
+    /// Run the pipeline up to the selected stage (inclusive).
+    /// Useful for partial/dummy benchmarking of specific stages.
+    void stepUpTo(float dt, PipelineStage stage);
 
     /// Access particles (for rendering / metrics).
     const std::vector<Particle>& particles() const { return particles_; }

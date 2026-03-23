@@ -66,6 +66,7 @@ CMAKE_BINARY_DIR = "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Indiv
 all: CMakeFiles/sph_simulation.dir/all
 all: CMakeFiles/sph_compare.dir/all
 all: CMakeFiles/sph_benchmark.dir/all
+all: CMakeFiles/sph_dummy.dir/all
 .PHONY : all
 
 # The main recursive "preinstall" target.
@@ -76,6 +77,7 @@ preinstall:
 clean: CMakeFiles/sph_simulation.dir/clean
 clean: CMakeFiles/sph_compare.dir/clean
 clean: CMakeFiles/sph_benchmark.dir/clean
+clean: CMakeFiles/sph_dummy.dir/clean
 .PHONY : clean
 
 #=============================================================================
@@ -85,7 +87,7 @@ clean: CMakeFiles/sph_benchmark.dir/clean
 CMakeFiles/sph_simulation.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_simulation.dir/build.make CMakeFiles/sph_simulation.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_simulation.dir/build.make CMakeFiles/sph_simulation.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/build/CMakeFiles" --progress-num=26,27,28,29,30,31,32,33,34,35,36,37,38 "Built target sph_simulation"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/build/CMakeFiles" --progress-num=38,39,40,41,42,43,44,45,46,47,48,49,50 "Built target sph_simulation"
 .PHONY : CMakeFiles/sph_simulation.dir/all
 
 # Build rule for subdir invocation for target.
@@ -155,6 +157,32 @@ sph_benchmark: CMakeFiles/sph_benchmark.dir/rule
 CMakeFiles/sph_benchmark.dir/clean:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_benchmark.dir/build.make CMakeFiles/sph_benchmark.dir/clean
 .PHONY : CMakeFiles/sph_benchmark.dir/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/sph_dummy.dir
+
+# All Build rule for target.
+CMakeFiles/sph_dummy.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_dummy.dir/build.make CMakeFiles/sph_dummy.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_dummy.dir/build.make CMakeFiles/sph_dummy.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir="/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/build/CMakeFiles" --progress-num=26,27,28,29,30,31,32,33,34,35,36,37 "Built target sph_dummy"
+.PHONY : CMakeFiles/sph_dummy.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/sph_dummy.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/build/CMakeFiles" 12
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/sph_dummy.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/build/CMakeFiles" 0
+.PHONY : CMakeFiles/sph_dummy.dir/rule
+
+# Convenience name for target.
+sph_dummy: CMakeFiles/sph_dummy.dir/rule
+.PHONY : sph_dummy
+
+# clean rule for target.
+CMakeFiles/sph_dummy.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_dummy.dir/build.make CMakeFiles/sph_dummy.dir/clean
+.PHONY : CMakeFiles/sph_dummy.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

@@ -155,6 +155,19 @@ sph_benchmark/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_benchmark.dir/build.make CMakeFiles/sph_benchmark.dir/build
 .PHONY : sph_benchmark/fast
 
+#=============================================================================
+# Target rules for targets named sph_dummy
+
+# Build rule for target.
+sph_dummy: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 sph_dummy
+.PHONY : sph_dummy
+
+# fast build rule for target.
+sph_dummy/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_dummy.dir/build.make CMakeFiles/sph_dummy.dir/build
+.PHONY : sph_dummy/fast
+
 src/benchmark.o: src/benchmark.cpp.o
 .PHONY : src/benchmark.o
 
@@ -187,6 +200,7 @@ src/core/Kernels.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_simulation.dir/build.make CMakeFiles/sph_simulation.dir/src/core/Kernels.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_compare.dir/build.make CMakeFiles/sph_compare.dir/src/core/Kernels.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_benchmark.dir/build.make CMakeFiles/sph_benchmark.dir/src/core/Kernels.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_dummy.dir/build.make CMakeFiles/sph_dummy.dir/src/core/Kernels.cpp.o
 .PHONY : src/core/Kernels.cpp.o
 
 src/core/Kernels.i: src/core/Kernels.cpp.i
@@ -197,6 +211,7 @@ src/core/Kernels.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_simulation.dir/build.make CMakeFiles/sph_simulation.dir/src/core/Kernels.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_compare.dir/build.make CMakeFiles/sph_compare.dir/src/core/Kernels.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_benchmark.dir/build.make CMakeFiles/sph_benchmark.dir/src/core/Kernels.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_dummy.dir/build.make CMakeFiles/sph_dummy.dir/src/core/Kernels.cpp.i
 .PHONY : src/core/Kernels.cpp.i
 
 src/core/Kernels.s: src/core/Kernels.cpp.s
@@ -207,6 +222,7 @@ src/core/Kernels.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_simulation.dir/build.make CMakeFiles/sph_simulation.dir/src/core/Kernels.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_compare.dir/build.make CMakeFiles/sph_compare.dir/src/core/Kernels.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_benchmark.dir/build.make CMakeFiles/sph_benchmark.dir/src/core/Kernels.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_dummy.dir/build.make CMakeFiles/sph_dummy.dir/src/core/Kernels.cpp.s
 .PHONY : src/core/Kernels.cpp.s
 
 src/core/Particle.o: src/core/Particle.cpp.o
@@ -217,6 +233,7 @@ src/core/Particle.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_simulation.dir/build.make CMakeFiles/sph_simulation.dir/src/core/Particle.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_compare.dir/build.make CMakeFiles/sph_compare.dir/src/core/Particle.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_benchmark.dir/build.make CMakeFiles/sph_benchmark.dir/src/core/Particle.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_dummy.dir/build.make CMakeFiles/sph_dummy.dir/src/core/Particle.cpp.o
 .PHONY : src/core/Particle.cpp.o
 
 src/core/Particle.i: src/core/Particle.cpp.i
@@ -227,6 +244,7 @@ src/core/Particle.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_simulation.dir/build.make CMakeFiles/sph_simulation.dir/src/core/Particle.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_compare.dir/build.make CMakeFiles/sph_compare.dir/src/core/Particle.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_benchmark.dir/build.make CMakeFiles/sph_benchmark.dir/src/core/Particle.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_dummy.dir/build.make CMakeFiles/sph_dummy.dir/src/core/Particle.cpp.i
 .PHONY : src/core/Particle.cpp.i
 
 src/core/Particle.s: src/core/Particle.cpp.s
@@ -237,6 +255,7 @@ src/core/Particle.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_simulation.dir/build.make CMakeFiles/sph_simulation.dir/src/core/Particle.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_compare.dir/build.make CMakeFiles/sph_compare.dir/src/core/Particle.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_benchmark.dir/build.make CMakeFiles/sph_benchmark.dir/src/core/Particle.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_dummy.dir/build.make CMakeFiles/sph_dummy.dir/src/core/Particle.cpp.s
 .PHONY : src/core/Particle.cpp.s
 
 src/core/SPHSolver.o: src/core/SPHSolver.cpp.o
@@ -247,6 +266,7 @@ src/core/SPHSolver.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_simulation.dir/build.make CMakeFiles/sph_simulation.dir/src/core/SPHSolver.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_compare.dir/build.make CMakeFiles/sph_compare.dir/src/core/SPHSolver.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_benchmark.dir/build.make CMakeFiles/sph_benchmark.dir/src/core/SPHSolver.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_dummy.dir/build.make CMakeFiles/sph_dummy.dir/src/core/SPHSolver.cpp.o
 .PHONY : src/core/SPHSolver.cpp.o
 
 src/core/SPHSolver.i: src/core/SPHSolver.cpp.i
@@ -257,6 +277,7 @@ src/core/SPHSolver.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_simulation.dir/build.make CMakeFiles/sph_simulation.dir/src/core/SPHSolver.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_compare.dir/build.make CMakeFiles/sph_compare.dir/src/core/SPHSolver.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_benchmark.dir/build.make CMakeFiles/sph_benchmark.dir/src/core/SPHSolver.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_dummy.dir/build.make CMakeFiles/sph_dummy.dir/src/core/SPHSolver.cpp.i
 .PHONY : src/core/SPHSolver.cpp.i
 
 src/core/SPHSolver.s: src/core/SPHSolver.cpp.s
@@ -267,6 +288,7 @@ src/core/SPHSolver.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_simulation.dir/build.make CMakeFiles/sph_simulation.dir/src/core/SPHSolver.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_compare.dir/build.make CMakeFiles/sph_compare.dir/src/core/SPHSolver.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_benchmark.dir/build.make CMakeFiles/sph_benchmark.dir/src/core/SPHSolver.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_dummy.dir/build.make CMakeFiles/sph_dummy.dir/src/core/SPHSolver.cpp.s
 .PHONY : src/core/SPHSolver.cpp.s
 
 src/core/SpatialHash.o: src/core/SpatialHash.cpp.o
@@ -277,6 +299,7 @@ src/core/SpatialHash.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_simulation.dir/build.make CMakeFiles/sph_simulation.dir/src/core/SpatialHash.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_compare.dir/build.make CMakeFiles/sph_compare.dir/src/core/SpatialHash.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_benchmark.dir/build.make CMakeFiles/sph_benchmark.dir/src/core/SpatialHash.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_dummy.dir/build.make CMakeFiles/sph_dummy.dir/src/core/SpatialHash.cpp.o
 .PHONY : src/core/SpatialHash.cpp.o
 
 src/core/SpatialHash.i: src/core/SpatialHash.cpp.i
@@ -287,6 +310,7 @@ src/core/SpatialHash.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_simulation.dir/build.make CMakeFiles/sph_simulation.dir/src/core/SpatialHash.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_compare.dir/build.make CMakeFiles/sph_compare.dir/src/core/SpatialHash.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_benchmark.dir/build.make CMakeFiles/sph_benchmark.dir/src/core/SpatialHash.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_dummy.dir/build.make CMakeFiles/sph_dummy.dir/src/core/SpatialHash.cpp.i
 .PHONY : src/core/SpatialHash.cpp.i
 
 src/core/SpatialHash.s: src/core/SpatialHash.cpp.s
@@ -297,7 +321,32 @@ src/core/SpatialHash.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_simulation.dir/build.make CMakeFiles/sph_simulation.dir/src/core/SpatialHash.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_compare.dir/build.make CMakeFiles/sph_compare.dir/src/core/SpatialHash.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_benchmark.dir/build.make CMakeFiles/sph_benchmark.dir/src/core/SpatialHash.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_dummy.dir/build.make CMakeFiles/sph_dummy.dir/src/core/SpatialHash.cpp.s
 .PHONY : src/core/SpatialHash.cpp.s
+
+src/dummy.o: src/dummy.cpp.o
+.PHONY : src/dummy.o
+
+# target to build an object file
+src/dummy.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_dummy.dir/build.make CMakeFiles/sph_dummy.dir/src/dummy.cpp.o
+.PHONY : src/dummy.cpp.o
+
+src/dummy.i: src/dummy.cpp.i
+.PHONY : src/dummy.i
+
+# target to preprocess a source file
+src/dummy.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_dummy.dir/build.make CMakeFiles/sph_dummy.dir/src/dummy.cpp.i
+.PHONY : src/dummy.cpp.i
+
+src/dummy.s: src/dummy.cpp.s
+.PHONY : src/dummy.s
+
+# target to generate assembly for a file
+src/dummy.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_dummy.dir/build.make CMakeFiles/sph_dummy.dir/src/dummy.cpp.s
+.PHONY : src/dummy.cpp.s
 
 src/main.o: src/main.cpp.o
 .PHONY : src/main.o
@@ -331,6 +380,7 @@ src/metrics/PerformanceMetrics.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_simulation.dir/build.make CMakeFiles/sph_simulation.dir/src/metrics/PerformanceMetrics.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_compare.dir/build.make CMakeFiles/sph_compare.dir/src/metrics/PerformanceMetrics.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_benchmark.dir/build.make CMakeFiles/sph_benchmark.dir/src/metrics/PerformanceMetrics.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_dummy.dir/build.make CMakeFiles/sph_dummy.dir/src/metrics/PerformanceMetrics.cpp.o
 .PHONY : src/metrics/PerformanceMetrics.cpp.o
 
 src/metrics/PerformanceMetrics.i: src/metrics/PerformanceMetrics.cpp.i
@@ -341,6 +391,7 @@ src/metrics/PerformanceMetrics.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_simulation.dir/build.make CMakeFiles/sph_simulation.dir/src/metrics/PerformanceMetrics.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_compare.dir/build.make CMakeFiles/sph_compare.dir/src/metrics/PerformanceMetrics.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_benchmark.dir/build.make CMakeFiles/sph_benchmark.dir/src/metrics/PerformanceMetrics.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_dummy.dir/build.make CMakeFiles/sph_dummy.dir/src/metrics/PerformanceMetrics.cpp.i
 .PHONY : src/metrics/PerformanceMetrics.cpp.i
 
 src/metrics/PerformanceMetrics.s: src/metrics/PerformanceMetrics.cpp.s
@@ -351,6 +402,7 @@ src/metrics/PerformanceMetrics.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_simulation.dir/build.make CMakeFiles/sph_simulation.dir/src/metrics/PerformanceMetrics.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_compare.dir/build.make CMakeFiles/sph_compare.dir/src/metrics/PerformanceMetrics.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_benchmark.dir/build.make CMakeFiles/sph_benchmark.dir/src/metrics/PerformanceMetrics.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_dummy.dir/build.make CMakeFiles/sph_dummy.dir/src/metrics/PerformanceMetrics.cpp.s
 .PHONY : src/metrics/PerformanceMetrics.cpp.s
 
 src/threading/CMPSolver.o: src/threading/CMPSolver.cpp.o
@@ -361,6 +413,7 @@ src/threading/CMPSolver.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_simulation.dir/build.make CMakeFiles/sph_simulation.dir/src/threading/CMPSolver.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_compare.dir/build.make CMakeFiles/sph_compare.dir/src/threading/CMPSolver.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_benchmark.dir/build.make CMakeFiles/sph_benchmark.dir/src/threading/CMPSolver.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_dummy.dir/build.make CMakeFiles/sph_dummy.dir/src/threading/CMPSolver.cpp.o
 .PHONY : src/threading/CMPSolver.cpp.o
 
 src/threading/CMPSolver.i: src/threading/CMPSolver.cpp.i
@@ -371,6 +424,7 @@ src/threading/CMPSolver.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_simulation.dir/build.make CMakeFiles/sph_simulation.dir/src/threading/CMPSolver.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_compare.dir/build.make CMakeFiles/sph_compare.dir/src/threading/CMPSolver.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_benchmark.dir/build.make CMakeFiles/sph_benchmark.dir/src/threading/CMPSolver.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_dummy.dir/build.make CMakeFiles/sph_dummy.dir/src/threading/CMPSolver.cpp.i
 .PHONY : src/threading/CMPSolver.cpp.i
 
 src/threading/CMPSolver.s: src/threading/CMPSolver.cpp.s
@@ -381,6 +435,7 @@ src/threading/CMPSolver.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_simulation.dir/build.make CMakeFiles/sph_simulation.dir/src/threading/CMPSolver.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_compare.dir/build.make CMakeFiles/sph_compare.dir/src/threading/CMPSolver.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_benchmark.dir/build.make CMakeFiles/sph_benchmark.dir/src/threading/CMPSolver.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_dummy.dir/build.make CMakeFiles/sph_dummy.dir/src/threading/CMPSolver.cpp.s
 .PHONY : src/threading/CMPSolver.cpp.s
 
 src/threading/CoarseGrainedSolver.o: src/threading/CoarseGrainedSolver.cpp.o
@@ -391,6 +446,7 @@ src/threading/CoarseGrainedSolver.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_simulation.dir/build.make CMakeFiles/sph_simulation.dir/src/threading/CoarseGrainedSolver.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_compare.dir/build.make CMakeFiles/sph_compare.dir/src/threading/CoarseGrainedSolver.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_benchmark.dir/build.make CMakeFiles/sph_benchmark.dir/src/threading/CoarseGrainedSolver.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_dummy.dir/build.make CMakeFiles/sph_dummy.dir/src/threading/CoarseGrainedSolver.cpp.o
 .PHONY : src/threading/CoarseGrainedSolver.cpp.o
 
 src/threading/CoarseGrainedSolver.i: src/threading/CoarseGrainedSolver.cpp.i
@@ -401,6 +457,7 @@ src/threading/CoarseGrainedSolver.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_simulation.dir/build.make CMakeFiles/sph_simulation.dir/src/threading/CoarseGrainedSolver.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_compare.dir/build.make CMakeFiles/sph_compare.dir/src/threading/CoarseGrainedSolver.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_benchmark.dir/build.make CMakeFiles/sph_benchmark.dir/src/threading/CoarseGrainedSolver.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_dummy.dir/build.make CMakeFiles/sph_dummy.dir/src/threading/CoarseGrainedSolver.cpp.i
 .PHONY : src/threading/CoarseGrainedSolver.cpp.i
 
 src/threading/CoarseGrainedSolver.s: src/threading/CoarseGrainedSolver.cpp.s
@@ -411,6 +468,7 @@ src/threading/CoarseGrainedSolver.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_simulation.dir/build.make CMakeFiles/sph_simulation.dir/src/threading/CoarseGrainedSolver.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_compare.dir/build.make CMakeFiles/sph_compare.dir/src/threading/CoarseGrainedSolver.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_benchmark.dir/build.make CMakeFiles/sph_benchmark.dir/src/threading/CoarseGrainedSolver.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_dummy.dir/build.make CMakeFiles/sph_dummy.dir/src/threading/CoarseGrainedSolver.cpp.s
 .PHONY : src/threading/CoarseGrainedSolver.cpp.s
 
 src/threading/FineGrainedSolver.o: src/threading/FineGrainedSolver.cpp.o
@@ -421,6 +479,7 @@ src/threading/FineGrainedSolver.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_simulation.dir/build.make CMakeFiles/sph_simulation.dir/src/threading/FineGrainedSolver.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_compare.dir/build.make CMakeFiles/sph_compare.dir/src/threading/FineGrainedSolver.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_benchmark.dir/build.make CMakeFiles/sph_benchmark.dir/src/threading/FineGrainedSolver.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_dummy.dir/build.make CMakeFiles/sph_dummy.dir/src/threading/FineGrainedSolver.cpp.o
 .PHONY : src/threading/FineGrainedSolver.cpp.o
 
 src/threading/FineGrainedSolver.i: src/threading/FineGrainedSolver.cpp.i
@@ -431,6 +490,7 @@ src/threading/FineGrainedSolver.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_simulation.dir/build.make CMakeFiles/sph_simulation.dir/src/threading/FineGrainedSolver.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_compare.dir/build.make CMakeFiles/sph_compare.dir/src/threading/FineGrainedSolver.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_benchmark.dir/build.make CMakeFiles/sph_benchmark.dir/src/threading/FineGrainedSolver.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_dummy.dir/build.make CMakeFiles/sph_dummy.dir/src/threading/FineGrainedSolver.cpp.i
 .PHONY : src/threading/FineGrainedSolver.cpp.i
 
 src/threading/FineGrainedSolver.s: src/threading/FineGrainedSolver.cpp.s
@@ -441,6 +501,7 @@ src/threading/FineGrainedSolver.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_simulation.dir/build.make CMakeFiles/sph_simulation.dir/src/threading/FineGrainedSolver.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_compare.dir/build.make CMakeFiles/sph_compare.dir/src/threading/FineGrainedSolver.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_benchmark.dir/build.make CMakeFiles/sph_benchmark.dir/src/threading/FineGrainedSolver.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_dummy.dir/build.make CMakeFiles/sph_dummy.dir/src/threading/FineGrainedSolver.cpp.s
 .PHONY : src/threading/FineGrainedSolver.cpp.s
 
 src/threading/SMTSolver.o: src/threading/SMTSolver.cpp.o
@@ -451,6 +512,7 @@ src/threading/SMTSolver.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_simulation.dir/build.make CMakeFiles/sph_simulation.dir/src/threading/SMTSolver.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_compare.dir/build.make CMakeFiles/sph_compare.dir/src/threading/SMTSolver.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_benchmark.dir/build.make CMakeFiles/sph_benchmark.dir/src/threading/SMTSolver.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_dummy.dir/build.make CMakeFiles/sph_dummy.dir/src/threading/SMTSolver.cpp.o
 .PHONY : src/threading/SMTSolver.cpp.o
 
 src/threading/SMTSolver.i: src/threading/SMTSolver.cpp.i
@@ -461,6 +523,7 @@ src/threading/SMTSolver.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_simulation.dir/build.make CMakeFiles/sph_simulation.dir/src/threading/SMTSolver.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_compare.dir/build.make CMakeFiles/sph_compare.dir/src/threading/SMTSolver.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_benchmark.dir/build.make CMakeFiles/sph_benchmark.dir/src/threading/SMTSolver.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_dummy.dir/build.make CMakeFiles/sph_dummy.dir/src/threading/SMTSolver.cpp.i
 .PHONY : src/threading/SMTSolver.cpp.i
 
 src/threading/SMTSolver.s: src/threading/SMTSolver.cpp.s
@@ -471,6 +534,7 @@ src/threading/SMTSolver.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_simulation.dir/build.make CMakeFiles/sph_simulation.dir/src/threading/SMTSolver.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_compare.dir/build.make CMakeFiles/sph_compare.dir/src/threading/SMTSolver.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_benchmark.dir/build.make CMakeFiles/sph_benchmark.dir/src/threading/SMTSolver.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_dummy.dir/build.make CMakeFiles/sph_dummy.dir/src/threading/SMTSolver.cpp.s
 .PHONY : src/threading/SMTSolver.cpp.s
 
 src/threading/SequentialSolver.o: src/threading/SequentialSolver.cpp.o
@@ -481,6 +545,7 @@ src/threading/SequentialSolver.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_simulation.dir/build.make CMakeFiles/sph_simulation.dir/src/threading/SequentialSolver.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_compare.dir/build.make CMakeFiles/sph_compare.dir/src/threading/SequentialSolver.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_benchmark.dir/build.make CMakeFiles/sph_benchmark.dir/src/threading/SequentialSolver.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_dummy.dir/build.make CMakeFiles/sph_dummy.dir/src/threading/SequentialSolver.cpp.o
 .PHONY : src/threading/SequentialSolver.cpp.o
 
 src/threading/SequentialSolver.i: src/threading/SequentialSolver.cpp.i
@@ -491,6 +556,7 @@ src/threading/SequentialSolver.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_simulation.dir/build.make CMakeFiles/sph_simulation.dir/src/threading/SequentialSolver.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_compare.dir/build.make CMakeFiles/sph_compare.dir/src/threading/SequentialSolver.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_benchmark.dir/build.make CMakeFiles/sph_benchmark.dir/src/threading/SequentialSolver.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_dummy.dir/build.make CMakeFiles/sph_dummy.dir/src/threading/SequentialSolver.cpp.i
 .PHONY : src/threading/SequentialSolver.cpp.i
 
 src/threading/SequentialSolver.s: src/threading/SequentialSolver.cpp.s
@@ -501,6 +567,7 @@ src/threading/SequentialSolver.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_simulation.dir/build.make CMakeFiles/sph_simulation.dir/src/threading/SequentialSolver.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_compare.dir/build.make CMakeFiles/sph_compare.dir/src/threading/SequentialSolver.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_benchmark.dir/build.make CMakeFiles/sph_benchmark.dir/src/threading/SequentialSolver.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sph_dummy.dir/build.make CMakeFiles/sph_dummy.dir/src/threading/SequentialSolver.cpp.s
 .PHONY : src/threading/SequentialSolver.cpp.s
 
 src/visual_compare.o: src/visual_compare.cpp.o
@@ -564,6 +631,7 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... sph_benchmark"
 	@echo "... sph_compare"
+	@echo "... sph_dummy"
 	@echo "... sph_simulation"
 	@echo "... src/benchmark.o"
 	@echo "... src/benchmark.i"
@@ -580,6 +648,9 @@ help:
 	@echo "... src/core/SpatialHash.o"
 	@echo "... src/core/SpatialHash.i"
 	@echo "... src/core/SpatialHash.s"
+	@echo "... src/dummy.o"
+	@echo "... src/dummy.i"
+	@echo "... src/dummy.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"

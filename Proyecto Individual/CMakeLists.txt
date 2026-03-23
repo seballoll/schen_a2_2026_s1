@@ -112,3 +112,19 @@ target_include_directories(sph_benchmark PRIVATE
 target_link_libraries(sph_benchmark PRIVATE
     Threads::Threads
 )
+
+# ============================================================
+# Dummy/partial executable (always headless)
+# ============================================================
+add_executable(sph_dummy
+    src/dummy.cpp
+    ${CORE_SOURCES}
+    ${THREADING_SOURCES}
+    ${METRICS_SOURCES}
+)
+target_include_directories(sph_dummy PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+target_link_libraries(sph_dummy PRIVATE
+    Threads::Threads
+)

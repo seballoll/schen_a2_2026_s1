@@ -171,6 +171,32 @@ Runs all models at multiple thread counts, prints a comparison table, and export
 
 Output: formatted table with execution time, speedup, efficiency for every model × thread count, plus `benchmark_results.csv`.
 
+#### 4. `sph_dummy` — Dummy/partial run per model
+
+Runs **one** measurement per model (Sequential, FGMT, CGMT, SMT, CMP) using the **same** thread count for parallel models.
+You can choose a **partial pipeline stage** to keep the run fast for presentations.
+
+```bash
+./sph_dummy [threads] [steps] [particles] [dt] [stage]
+```
+
+Stages:
+- `neighbours` — only build neighbour structure
+- `density` — neighbours + density/pressure
+- `forces` — neighbours + density/pressure + forces (default)
+- `integrate` — up to integration
+- `boundary` / `full` — full timestep pipeline
+
+**Examples:**
+
+```bash
+# Fast “partial” demo (up to forces) at 4 threads
+./sph_dummy 4 100 2000 0.002 forces
+
+# Even faster: only density stage
+./sph_dummy 4 100 2000 0.002 density
+```
+
 ## Project Structure
 
 ```

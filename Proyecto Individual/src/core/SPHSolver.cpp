@@ -74,6 +74,28 @@ void SPHSolver::step(float dt) {
 }
 
 // ============================================================
+// stepUpTo — execute the SPH pipeline up to a given stage
+// ============================================================
+void SPHSolver::stepUpTo(float dt, PipelineStage stage) {
+    const int s = static_cast<int>(stage);
+    if (s >= static_cast<int>(PipelineStage::Neighbours)) {
+        buildNeighbourStructure();
+    }
+    if (s >= static_cast<int>(PipelineStage::DensityPressure)) {
+        computeDensityPressure();
+    }
+    if (s >= static_cast<int>(PipelineStage::Forces)) {
+        computeForces();
+    }
+    if (s >= static_cast<int>(PipelineStage::Integrate)) {
+        integrate(dt);
+    }
+    if (s >= static_cast<int>(PipelineStage::Boundary)) {
+        enforceBoundary();
+    }
+}
+
+// ============================================================
 // Pipeline stages — default SEQUENTIAL implementations
 // ============================================================
 
