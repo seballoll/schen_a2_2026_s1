@@ -1,22 +1,20 @@
 #pragma once
 
 #include "core/SPHSolver.h"
-#include <thread>
-#include <mutex>
-#include <barrier>
+
+#include <cstdint>
 #include <functional>
+#include <vector>
 
 // ============================================================
 // Fine-Grained Multithreading (FGMT)
 //
-// Concept: threads are interleaved at a very fine granularity.
-// On every pipeline stage we split the particle array evenly
-// among threads.  Between stages we use a BARRIER so that no
-// thread advances until all finish the current stage.
+// Concept (PROJECT MODEL): emulate hardware fine-grained MT
+// with a *cooperative* scheduler and a small quantum.
 //
-// Analogy to hardware FGMT: the processor switches between
-// threads on every cycle to hide latency.  Here we model that
-// by having many short parallel sections with frequent syncs.
+// IMPORTANT: This is intentionally NOT implemented with
+// std::thread. We simulate interleaving and stalls to report
+// cycles/speedups per the assignment spec.
 // ============================================================
 class FineGrainedSolver : public SPHSolver {
 public:
@@ -32,7 +30,9 @@ protected:
 private:
     int numThreads_;
 
-    /// Helper: run `func(startIdx, endIdx)` on `numThreads_` threads,
-    /// splitting particles evenly.
-    void parallelFor(int n, std::function<void(int, int)> func);
+    void runStageFGMT(
+        int stageId,
+        int actualThreads,
+        const std::function<void(int /*tid*/, int /*particleIndex*/, std::vector<int>& /*neighboursScratch*/)>& particleWork,
+        const std::function<uint64_t(int /*tid*/, int /*particleIndex*/, const std::vector<int>& /*neighboursScratch*/)>& cycleCost);
 };

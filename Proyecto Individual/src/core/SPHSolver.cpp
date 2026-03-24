@@ -1,6 +1,7 @@
 #include "core/SPHSolver.h"
 #include "core/Kernels.h"
 #include "Config.h"
+#include "core/SimUtil.h"
 #include <cmath>
 
 // ============================================================
@@ -8,6 +9,57 @@
 // ============================================================
 SPHSolver::SPHSolver()
     : grid_(Config::CELL_SIZE, Config::HASH_TABLE_SIZE) {}
+
+void SPHSolver::resetSimStats() {
+    simStats_.reset();
+    simStepIndex_ = 0;
+}
+
+double SPHSolver::simulatedSeconds() const {
+    if (Config::CPU_CLOCK_HZ <= 0.0) return 0.0;
+    return static_cast<double>(simStats_.totalCycles) / Config::CPU_CLOCK_HZ;
+}
+
+void SPHSolver::simAddWork(uint64_t cycles) {
+    if (!Config::ENABLE_CYCLE_MODEL || cycles == 0) return;
+    simStats_.totalCycles += cycles;
+    simStats_.workCycles += cycles;
+}
+
+void SPHSolver::simAddIdle(uint64_t cycles) {
+    if (!Config::ENABLE_CYCLE_MODEL || cycles == 0) return;
+    simStats_.totalCycles += cycles;
+    simStats_.idleCycles += cycles;
+}
+
+void SPHSolver::simAddContextSwitch(uint64_t cycles) {
+    if (!Config::ENABLE_CYCLE_MODEL || cycles == 0) return;
+    simStats_.totalCycles += cycles;
+    simStats_.contextSwitchCycles += cycles;
+}
+
+void SPHSolver::simAddStall(StallKind kind, uint64_t latencyCycles, bool hidden) {
+    if (!Config::ENABLE_CYCLE_MODEL || latencyCycles == 0) return;
+
+    simStats_.stallEvents++;
+    simStats_.stallCyclesTotal += latencyCycles;
+    if (hidden) simStats_.stallCyclesHidden += latencyCycles;
+    else simStats_.stallCyclesExposed += latencyCycles;
+
+    switch (kind) {
+        case StallKind::L1:     simStats_.stallEventsL1++; break;
+        case StallKind::L2:     simStats_.stallEventsL2++; break;
+        case StallKind::L3:     simStats_.stallEventsL3++; break;
+        case StallKind::Memory: simStats_.stallEventsMem++; break;
+        case StallKind::Sync:   simStats_.stallEventsSync++; break;
+    }
+}
+
+void SPHSolver::simAddExposedStallCycles(uint64_t cycles) {
+    if (!Config::ENABLE_CYCLE_MODEL || cycles == 0) return;
+    simStats_.stallCyclesTotal += cycles;
+    simStats_.stallCyclesExposed += cycles;
+}
 
 // ============================================================
 // initDamBreak — place particles in a rectangular block on the
@@ -17,6 +69,7 @@ SPHSolver::SPHSolver()
 // estimate matches REST_DENSITY when the fluid is at rest.
 // ============================================================
 void SPHSolver::initDamBreak(int numParticles, float domainW, float domainH) {
+    resetSimStats();
     particles_.clear();
     particles_.reserve(numParticles);
 
@@ -55,6 +108,8 @@ void SPHSolver::initDamBreak(int numParticles, float domainW, float domainH) {
 // step — execute the full SPH pipeline for one timestep
 // ============================================================
 void SPHSolver::step(float dt) {
+    ++simStepIndex_;
+
     // 1. Rebuild neighbour structure
     buildNeighbourStructure();
 
@@ -77,6 +132,8 @@ void SPHSolver::step(float dt) {
 // stepUpTo — execute the SPH pipeline up to a given stage
 // ============================================================
 void SPHSolver::stepUpTo(float dt, PipelineStage stage) {
+    ++simStepIndex_;
+
     const int s = static_cast<int>(stage);
     if (s >= static_cast<int>(PipelineStage::Neighbours)) {
         buildNeighbourStructure();
@@ -101,6 +158,10 @@ void SPHSolver::stepUpTo(float dt, PipelineStage stage) {
 
 void SPHSolver::buildNeighbourStructure() {
     grid_.build(particles_);
+
+    if (Config::ENABLE_CYCLE_MODEL) {
+        simAddWork(Config::CYCLES_BUILD_HASH_PER_P * static_cast<uint64_t>(particles_.size()));
+    }
 }
 
 void SPHSolver::computeDensityPressure() {
@@ -111,8 +172,22 @@ void SPHSolver::computeDensityPressure() {
 
     std::vector<int> neighbours;
 
-    for (auto& pi : particles_) {
+    for (int i = 0; i < static_cast<int>(particles_.size()); ++i) {
+        auto& pi = particles_[i];
         grid_.queryNeighbours(pi.position, h, particles_, neighbours);
+
+        if (Config::ENABLE_CYCLE_MODEL) {
+            uint64_t compute = Config::CYCLES_NEIGH_QUERY_BASE +
+                               Config::CYCLES_PER_NEIGHBOUR * static_cast<uint64_t>(neighbours.size());
+            simAddWork(compute);
+
+            auto [kind, lat] = SimUtil::pickStall(simSeed_, simStepIndex_, 2, i);
+            if (lat > 0) {
+                // In the sequential baseline stalls are fully exposed.
+                simAddStall(kind, lat, /*hidden=*/false);
+                simAddIdle(lat);
+            }
+        }
 
         float density = 0.0f;
         for (int j : neighbours) {
@@ -137,6 +212,19 @@ void SPHSolver::computeForces() {
         Vec2 fViscosity{0, 0};
 
         grid_.queryNeighbours(pi.position, h, particles_, neighbours);
+
+        if (Config::ENABLE_CYCLE_MODEL) {
+            uint64_t base = Config::CYCLES_NEIGH_QUERY_BASE +
+                            Config::CYCLES_PER_NEIGHBOUR * static_cast<uint64_t>(neighbours.size());
+            // Forces is heavier than density, so scale the compute cost.
+            simAddWork(base + (base / 2));
+
+            auto [kind, lat] = SimUtil::pickStall(simSeed_, simStepIndex_, 3, i);
+            if (lat > 0) {
+                simAddStall(kind, lat, /*hidden=*/false);
+                simAddIdle(lat);
+            }
+        }
 
         for (int j : neighbours) {
             if (j == i) continue;
@@ -165,6 +253,9 @@ void SPHSolver::computeForces() {
 }
 
 void SPHSolver::integrate(float dt) {
+    if (Config::ENABLE_CYCLE_MODEL) {
+        simAddWork(Config::CYCLES_INTEGRATE_PER_P * static_cast<uint64_t>(particles_.size()));
+    }
     for (auto& p : particles_) {
         // a = F / ρ
         Vec2 acceleration = p.force / p.density;
@@ -178,6 +269,9 @@ void SPHSolver::enforceBoundary() {
     const float w    = Config::DOMAIN_WIDTH;
     const float h    = Config::DOMAIN_HEIGHT;
 
+    if (Config::ENABLE_CYCLE_MODEL) {
+        simAddWork(Config::CYCLES_BOUNDARY_PER_P * static_cast<uint64_t>(particles_.size()));
+    }
     for (auto& p : particles_) {
         // Left wall
         if (p.position.x < 0.0f) {

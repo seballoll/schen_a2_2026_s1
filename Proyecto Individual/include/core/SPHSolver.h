@@ -3,6 +3,7 @@
 #include "core/Particle.h"
 #include "core/SpatialHash.h"
 #include "Config.h"
+#include "metrics/SimStats.h"
 #include <vector>
 #include <string>
 
@@ -48,9 +49,24 @@ public:
     /// Human-readable model name.
     virtual std::string modelName() const { return "Base (Sequential)"; }
 
+    // --- Simulated hardware counters (cycles/stalls) ---
+    const SimStats& simStats() const { return simStats_; }
+    void resetSimStats();
+    double simulatedSeconds() const;
+
 protected:
     std::vector<Particle> particles_;
     SpatialHash           grid_;
+
+    // --- Simulated hardware model helpers ---
+    void simAddWork(uint64_t cycles);
+    void simAddIdle(uint64_t cycles);
+    void simAddContextSwitch(uint64_t cycles);
+    void simAddStall(StallKind kind, uint64_t latencyCycles, bool hidden);
+    void simAddExposedStallCycles(uint64_t cycles);
+
+    uint64_t simStepIndex_ = 0;
+    uint64_t simSeed_      = Config::SIM_SEED;
 
     // --- Pipeline stages (overridden for parallelism) ---
     virtual void buildNeighbourStructure();
@@ -58,4 +74,7 @@ protected:
     virtual void computeForces();
     virtual void integrate(float dt);
     virtual void enforceBoundary();
+
+private:
+    SimStats simStats_;
 };

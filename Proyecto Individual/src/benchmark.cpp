@@ -90,16 +90,21 @@ int main(int argc, char* argv[]) {
 
     PerformanceMetrics metrics;
     double seqTime = 0.0;
+    uint64_t seqCycles = 0;
 
     for (auto& m : models) {
         std::cout << "Running: " << m.name << " (" << m.numThreads << " threads)..." << std::flush;
 
         auto solver = m.create();
-    double elapsed = runModel(*solver, numSteps, numParticles, dt, metrics);
+        double elapsed = runModel(*solver, numSteps, numParticles, dt, metrics);
+        const auto& ss = solver->simStats();
 
         if (m.name == "Sequential") {
             seqTime = elapsed;
             metrics.setBaselineTime(seqTime);
+
+            seqCycles = ss.totalCycles;
+            metrics.setBaselineCycles(seqCycles);
         }
 
         PerformanceMetrics::RunResult result;
@@ -109,6 +114,23 @@ int main(int argc, char* argv[]) {
         result.numParticles   = numParticles;
         result.totalTimeSec   = elapsed;
         result.avgStepTimeMsec = (elapsed / numSteps) * 1000.0;
+
+        // Simulated hardware counters (available for sequential + cooperative FG/CG).
+        // SMT/CMP are real multithreading models; we intentionally skip the simulated
+        // cycle/stall accounting there to avoid misleading results.
+        const bool hasCooperativeCycleModel =
+            m.name.rfind("SMT-", 0) != 0 && m.name.rfind("CMP-", 0) != 0;
+
+        if (hasCooperativeCycleModel) {
+            result.simTotalCycles = ss.totalCycles;
+            result.simTotalTimeSec = solver->simulatedSeconds();
+            result.simWorkCycles = ss.workCycles;
+            result.simIdleCycles = ss.idleCycles;
+            result.simContextSwitchCycles = ss.contextSwitchCycles;
+            result.simStallCyclesTotal = ss.stallCyclesTotal;
+            result.simStallCyclesHidden = ss.stallCyclesHidden;
+            result.simStallCyclesExposed = ss.stallCyclesExposed;
+        }
         metrics.recordRun(result);
 
         std::cout << "  " << elapsed << " s" << std::endl;

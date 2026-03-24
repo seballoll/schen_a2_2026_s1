@@ -1,31 +1,25 @@
 #pragma once
 
 #include "core/SPHSolver.h"
-#include <thread>
-#include <mutex>
-#include <condition_variable>
+
+#include <cstdint>
 #include <functional>
+#include <vector>
 
 // ============================================================
 // Coarse-Grained Multithreading (CGMT)
 //
-// Concept: threads run large chunks of work and only
-// synchronise at long-latency events (here: between pipeline
-// stages).  Unlike FGMT where we sync per-sub-step, CGMT
-// gives each thread a big block and waits only at stage
-// boundaries.
+// Concept (PROJECT MODEL): emulate hardware coarse-grained MT
+// with a cooperative scheduler that runs a thread until it hits
+// a long-latency stall, then switches.
 //
-// Analogy to hardware CGMT: the processor switches threads
-// only on cache misses or long stalls, not every cycle.
+// IMPORTANT: This is intentionally NOT implemented with
+// std::thread. We simulate stalls/switching to report cycles.
 // ============================================================
 class CoarseGrainedSolver : public SPHSolver {
 public:
     explicit CoarseGrainedSolver(int numThreads);
     std::string modelName() const override;
-
-    /// Override step() to launch persistent worker threads that
-    /// process ALL stages in one go with barriers in between.
-    void stepParallel(float dt);
 
 protected:
     void computeDensityPressure() override;
@@ -35,5 +29,10 @@ protected:
 
 private:
     int numThreads_;
-    void parallelFor(int n, std::function<void(int, int)> func);
+
+    void runStageCGMT(
+        int stageId,
+        int actualThreads,
+        const std::function<void(int /*tid*/, int /*particleIndex*/, std::vector<int>& /*neighboursScratch*/)>& particleWork,
+        const std::function<uint64_t(int /*tid*/, int /*particleIndex*/, const std::vector<int>& /*neighboursScratch*/)>& cycleCost);
 };
