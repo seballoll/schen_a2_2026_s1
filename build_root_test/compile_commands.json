@@ -1,0 +1,290 @@
+[
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_simulation.dir/src/main.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/main.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/main.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_simulation.dir/src/main.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_simulation.dir/src/core/Particle.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/core/Particle.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/core/Particle.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_simulation.dir/src/core/Particle.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_simulation.dir/src/core/SPHSolver.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/core/SPHSolver.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/core/SPHSolver.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_simulation.dir/src/core/SPHSolver.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_simulation.dir/src/core/SpatialHash.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/core/SpatialHash.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/core/SpatialHash.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_simulation.dir/src/core/SpatialHash.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_simulation.dir/src/core/Kernels.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/core/Kernels.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/core/Kernels.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_simulation.dir/src/core/Kernels.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_simulation.dir/src/threading/SequentialSolver.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/threading/SequentialSolver.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/threading/SequentialSolver.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_simulation.dir/src/threading/SequentialSolver.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_simulation.dir/src/threading/FineGrainedSolver.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/threading/FineGrainedSolver.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/threading/FineGrainedSolver.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_simulation.dir/src/threading/FineGrainedSolver.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_simulation.dir/src/threading/CoarseGrainedSolver.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/threading/CoarseGrainedSolver.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/threading/CoarseGrainedSolver.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_simulation.dir/src/threading/CoarseGrainedSolver.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_simulation.dir/src/threading/SMTSolver.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/threading/SMTSolver.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/threading/SMTSolver.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_simulation.dir/src/threading/SMTSolver.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_simulation.dir/src/threading/CMPSolver.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/threading/CMPSolver.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/threading/CMPSolver.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_simulation.dir/src/threading/CMPSolver.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_simulation.dir/src/metrics/PerformanceMetrics.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/metrics/PerformanceMetrics.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/metrics/PerformanceMetrics.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_simulation.dir/src/metrics/PerformanceMetrics.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_simulation.dir/src/visualization/Renderer.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/visualization/Renderer.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/visualization/Renderer.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_simulation.dir/src/visualization/Renderer.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_compare.dir/src/visual_compare.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/visual_compare.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/visual_compare.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_compare.dir/src/visual_compare.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_compare.dir/src/core/Particle.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/core/Particle.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/core/Particle.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_compare.dir/src/core/Particle.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_compare.dir/src/core/SPHSolver.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/core/SPHSolver.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/core/SPHSolver.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_compare.dir/src/core/SPHSolver.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_compare.dir/src/core/SpatialHash.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/core/SpatialHash.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/core/SpatialHash.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_compare.dir/src/core/SpatialHash.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_compare.dir/src/core/Kernels.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/core/Kernels.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/core/Kernels.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_compare.dir/src/core/Kernels.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_compare.dir/src/threading/SequentialSolver.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/threading/SequentialSolver.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/threading/SequentialSolver.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_compare.dir/src/threading/SequentialSolver.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_compare.dir/src/threading/FineGrainedSolver.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/threading/FineGrainedSolver.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/threading/FineGrainedSolver.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_compare.dir/src/threading/FineGrainedSolver.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_compare.dir/src/threading/CoarseGrainedSolver.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/threading/CoarseGrainedSolver.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/threading/CoarseGrainedSolver.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_compare.dir/src/threading/CoarseGrainedSolver.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_compare.dir/src/threading/SMTSolver.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/threading/SMTSolver.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/threading/SMTSolver.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_compare.dir/src/threading/SMTSolver.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_compare.dir/src/threading/CMPSolver.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/threading/CMPSolver.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/threading/CMPSolver.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_compare.dir/src/threading/CMPSolver.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_compare.dir/src/metrics/PerformanceMetrics.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/metrics/PerformanceMetrics.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/metrics/PerformanceMetrics.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_compare.dir/src/metrics/PerformanceMetrics.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_compare.dir/src/visualization/Renderer.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/visualization/Renderer.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/visualization/Renderer.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_compare.dir/src/visualization/Renderer.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_benchmark.dir/src/benchmark.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/benchmark.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/benchmark.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_benchmark.dir/src/benchmark.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_benchmark.dir/src/core/Particle.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/core/Particle.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/core/Particle.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_benchmark.dir/src/core/Particle.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_benchmark.dir/src/core/SPHSolver.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/core/SPHSolver.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/core/SPHSolver.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_benchmark.dir/src/core/SPHSolver.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_benchmark.dir/src/core/SpatialHash.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/core/SpatialHash.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/core/SpatialHash.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_benchmark.dir/src/core/SpatialHash.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_benchmark.dir/src/core/Kernels.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/core/Kernels.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/core/Kernels.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_benchmark.dir/src/core/Kernels.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_benchmark.dir/src/threading/SequentialSolver.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/threading/SequentialSolver.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/threading/SequentialSolver.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_benchmark.dir/src/threading/SequentialSolver.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_benchmark.dir/src/threading/FineGrainedSolver.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/threading/FineGrainedSolver.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/threading/FineGrainedSolver.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_benchmark.dir/src/threading/FineGrainedSolver.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_benchmark.dir/src/threading/CoarseGrainedSolver.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/threading/CoarseGrainedSolver.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/threading/CoarseGrainedSolver.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_benchmark.dir/src/threading/CoarseGrainedSolver.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_benchmark.dir/src/threading/SMTSolver.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/threading/SMTSolver.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/threading/SMTSolver.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_benchmark.dir/src/threading/SMTSolver.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_benchmark.dir/src/threading/CMPSolver.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/threading/CMPSolver.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/threading/CMPSolver.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_benchmark.dir/src/threading/CMPSolver.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_benchmark.dir/src/metrics/PerformanceMetrics.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/metrics/PerformanceMetrics.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/metrics/PerformanceMetrics.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_benchmark.dir/src/metrics/PerformanceMetrics.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_dummy.dir/src/dummy.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/dummy.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/dummy.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_dummy.dir/src/dummy.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_dummy.dir/src/core/Particle.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/core/Particle.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/core/Particle.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_dummy.dir/src/core/Particle.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_dummy.dir/src/core/SPHSolver.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/core/SPHSolver.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/core/SPHSolver.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_dummy.dir/src/core/SPHSolver.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_dummy.dir/src/core/SpatialHash.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/core/SpatialHash.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/core/SpatialHash.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_dummy.dir/src/core/SpatialHash.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_dummy.dir/src/core/Kernels.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/core/Kernels.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/core/Kernels.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_dummy.dir/src/core/Kernels.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_dummy.dir/src/threading/SequentialSolver.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/threading/SequentialSolver.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/threading/SequentialSolver.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_dummy.dir/src/threading/SequentialSolver.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_dummy.dir/src/threading/FineGrainedSolver.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/threading/FineGrainedSolver.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/threading/FineGrainedSolver.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_dummy.dir/src/threading/FineGrainedSolver.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_dummy.dir/src/threading/CoarseGrainedSolver.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/threading/CoarseGrainedSolver.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/threading/CoarseGrainedSolver.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_dummy.dir/src/threading/CoarseGrainedSolver.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_dummy.dir/src/threading/SMTSolver.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/threading/SMTSolver.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/threading/SMTSolver.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_dummy.dir/src/threading/SMTSolver.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_dummy.dir/src/threading/CMPSolver.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/threading/CMPSolver.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/threading/CMPSolver.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_dummy.dir/src/threading/CMPSolver.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/sph_dummy.dir/src/metrics/PerformanceMetrics.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/metrics/PerformanceMetrics.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/metrics/PerformanceMetrics.cpp",
+  "output": "Proyecto Individual/CMakeFiles/sph_dummy.dir/src/metrics/PerformanceMetrics.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/lab_runner.dir/src/lab/lab_main.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/lab/lab_main.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/lab/lab_main.cpp",
+  "output": "Proyecto Individual/CMakeFiles/lab_runner.dir/src/lab/lab_main.cpp.o"
+},
+{
+  "directory": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual",
+  "command": "/usr/bin/c++  -I\"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/include\" -O3 -DNDEBUG -std=gnu++20 -o CMakeFiles/lab_runner.dir/src/lab/LabExperiment.cpp.o -c \"/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/lab/LabExperiment.cpp\"",
+  "file": "/home/sebas/Documents/GitHub/schen_a2_2026_s1/Proyecto Individual/src/lab/LabExperiment.cpp",
+  "output": "Proyecto Individual/CMakeFiles/lab_runner.dir/src/lab/LabExperiment.cpp.o"
+}
+]
