@@ -25,13 +25,19 @@ struct SPHParams {
     float domainWidth = 1.0f;
     float domainHeight = 1.0f;
     float particleSpacing = 0.02f;
+    float smoothingRadius = 0.04f;
 
     float restDensity = 1000.0f;
-    float gasConstant = 2000.0f;
-    float viscosity = 0.1f;
-    float gravity = -9.8f;
-    float particleMass = 1.0f;
-    float boundaryDamping = -0.5f;
+    float gasConstant = 350.0f;
+    float viscosity = 0.2f;
+    float gravity = -3.0f;
+    float particleMass = 0.03f;
+    float boundaryDamping = -0.35f;
+
+    // Stability controls for the baseline laboratory implementation.
+    float minDensityRatio = 0.2f;
+    float maxPressure = 2.0e6f;
+    float maxSpeed = 25.0f;
 };
 
 struct SPHState {

@@ -1,5 +1,6 @@
 #include "simulation/SequentialStageRunner.h"
 
+#include <fstream>
 #include <iomanip>
 #include <iostream>
 
@@ -64,6 +65,40 @@ void printPostRunDensityPressureSample(const sim::SPHState& state) {
     }
 }
 
+void printLastStepMetrics(const sim::SequentialStageRunner& runner) {
+    const auto& steps = runner.stepSnapshots();
+    if (steps.empty()) {
+        std::cout << "\nNo step metrics snapshots available.\n";
+        return;
+    }
+
+    const auto& last = steps.back();
+    std::cout << "\nStage 6 summary (last step):\n";
+    std::cout << "  step=" << last.stepIndex
+              << " avgDensity=" << std::fixed << std::setprecision(3) << last.avgDensity
+              << " avgSpeed=" << std::fixed << std::setprecision(3) << last.avgSpeed
+              << " maxSpeed=" << std::fixed << std::setprecision(3) << last.maxSpeedObserved
+              << " kinetic=" << std::fixed << std::setprecision(3) << last.totalKineticEnergy
+              << " invalid=" << last.invalidParticleCount
+              << "\n";
+}
+
+void exportStepMetricsCsv(const sim::SequentialStageRunner& runner, const std::string& filePath) {
+    std::ofstream out(filePath);
+    out << "Step,AvgDensity,AvgSpeed,MaxSpeed,TotalKineticEnergy,InvalidParticleCount\n";
+
+    for (const auto& s : runner.stepSnapshots()) {
+        out << s.stepIndex << ","
+            << s.avgDensity << ","
+            << s.avgSpeed << ","
+            << s.maxSpeedObserved << ","
+            << s.totalKineticEnergy << ","
+            << s.invalidParticleCount << "\n";
+    }
+
+    std::cout << "Exported step metrics to: " << filePath << "\n";
+}
+
 } // namespace
 
 int main(int argc, char* argv[]) {
@@ -81,6 +116,8 @@ int main(int argc, char* argv[]) {
     runner.runAllSteps();
     printRunSummary(runner, cfg);
     printPostRunDensityPressureSample(runner.state());
+    printLastStepMetrics(runner);
+    exportStepMetricsCsv(runner, "stage6_step_metrics.csv");
 
     return 0;
 }

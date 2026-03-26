@@ -7,6 +7,15 @@ namespace sim {
 
 class SequentialStageRunner final : public StageRunnerContract {
 public:
+    struct StepMetricsSnapshot {
+        int stepIndex = 0;
+        double avgDensity = 0.0;
+        double avgSpeed = 0.0;
+        double totalKineticEnergy = 0.0;
+        double maxSpeedObserved = 0.0;
+        int invalidParticleCount = 0;
+    };
+
     SequentialStageRunner() = default;
 
     void initialize(const RunConfig& config) override;
@@ -18,19 +27,25 @@ public:
     const RunMetrics& runMetrics() const override;
     std::string modelName() const override;
     const SPHState& state() const;
+    const std::vector<StepMetricsSnapshot>& stepSnapshots() const;
 
 private:
     RunConfig config_{};
     RunMetrics runMetrics_{};
     SPHState state_{};
+     std::vector<std::vector<int>> neighbours_{};
+    std::vector<StepMetricsSnapshot> stepSnapshots_{};
     bool initialized_ = false;
 
     void resetMetrics();
     StageMetrics& stageMetricsRef(StageId stage);
     void executeStageSynthetic(StageId stage, int stepIndex);
+     void executeNeighbourStructureReal(StageMetrics& metrics);
     void executeDensityPressureReal(StageMetrics& metrics, int stepIndex);
     void executeForcesReal(StageMetrics& metrics, int stepIndex);
     void executeIntegrateReal(StageMetrics& metrics);
+    void executeBoundaryReal(StageMetrics& metrics);
+    void executeMetricsReal(StageMetrics& metrics, int stepIndex);
 
     CycleCount baseCyclesPerParticle(StageId stage) const;
     CycleCount estimateWorkCycles(StageId stage) const;
