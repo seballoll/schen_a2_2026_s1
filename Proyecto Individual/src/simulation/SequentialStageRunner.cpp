@@ -60,7 +60,10 @@ void SequentialStageRunner::initialize(const RunConfig& config) {
 
     state_ = {};
     initializeDamBreak(state_, config_.particles);
-    neighbours_.assign(state_.particles.size(), {});
+    gridCellSize_ = std::max(state_.params.smoothingRadius, 1e-6f);
+    gridWidth_ = std::max(1, static_cast<int>(std::ceil(state_.params.domainWidth / gridCellSize_)));
+    gridHeight_ = std::max(1, static_cast<int>(std::ceil(state_.params.domainHeight / gridCellSize_)));
+    gridBuckets_.assign(static_cast<std::size_t>(gridWidth_ * gridHeight_), {});
     stepSnapshots_.clear();
     stepSnapshots_.reserve(static_cast<std::size_t>(config_.steps));
 
@@ -214,36 +217,25 @@ void SequentialStageRunner::executeNeighbourStructureReal(StageMetrics& metrics)
     const auto t0 = std::chrono::steady_clock::now();
 
     const int n = static_cast<int>(state_.particles.size());
-    const float h = state_.params.smoothingRadius;
-    const float h2 = h * h;
 
-    neighbours_.assign(static_cast<std::size_t>(n), {});
+    for (auto& bucket : gridBuckets_) {
+        bucket.clear();
+    }
 
-    CycleCount neighbourChecks = 0;
-    CycleCount neighbourLinks = 0;
-
+    CycleCount bucketInserts = 0;
     for (int i = 0; i < n; ++i) {
-        auto& neighI = neighbours_[static_cast<std::size_t>(i)];
-        neighI.reserve(32);
-
-        const Particle& pi = state_.particles[static_cast<std::size_t>(i)];
-        for (int j = 0; j < n; ++j) {
-            const Particle& pj = state_.particles[static_cast<std::size_t>(j)];
-            const float dx = pi.position.x - pj.position.x;
-            const float dy = pi.position.y - pj.position.y;
-            const float r2 = dx * dx + dy * dy;
-
-            ++neighbourChecks;
-            if (r2 <= h2) {
-                neighI.push_back(j);
-                ++neighbourLinks;
-            }
-        }
+        const Particle& p = state_.particles[static_cast<std::size_t>(i)];
+        int cx = static_cast<int>(std::floor(p.position.x / gridCellSize_));
+        int cy = static_cast<int>(std::floor(p.position.y / gridCellSize_));
+        cx = clampCellX(cx);
+        cy = clampCellY(cy);
+        gridBuckets_[static_cast<std::size_t>(cellIndex(cx, cy))].push_back(i);
+        ++bucketInserts;
     }
 
     const auto t1 = std::chrono::steady_clock::now();
 
-    const CycleCount workCycles = neighbourChecks * 3 + neighbourLinks * 5;
+    const CycleCount workCycles = static_cast<CycleCount>(n) * 8 + bucketInserts * 6;
     metrics.wallMs += std::chrono::duration<double, std::milli>(t1 - t0).count();
     metrics.workCycles += workCycles;
     metrics.totalCycles += workCycles;
@@ -260,6 +252,7 @@ void SequentialStageRunner::executeDensityPressureReal(StageMetrics& metrics, in
     const float maxPressure = state_.params.maxPressure;
 
     std::atomic<CycleCount> neighbourContributions{0};
+    std::atomic<CycleCount> candidateReads{0};
 
     const int n = static_cast<int>(state_.particles.size());
     strategy_->runForRange(n, [&](int begin, int end, int) {
@@ -267,17 +260,28 @@ void SequentialStageRunner::executeDensityPressureReal(StageMetrics& metrics, in
             Particle& pi = state_.particles[static_cast<std::size_t>(i)];
             float density = 0.0f;
 
-            const auto& neighI = neighbours_[static_cast<std::size_t>(i)];
-            for (int j : neighI) {
-                const Particle& pj = state_.particles[static_cast<std::size_t>(j)];
-                const float dx = pi.position.x - pj.position.x;
-                const float dy = pi.position.y - pj.position.y;
-                const float r2 = dx * dx + dy * dy;
+            int minX = 0;
+            int maxX = 0;
+            int minY = 0;
+            int maxY = 0;
+            neighbourCellBounds(pi, minX, maxX, minY, maxY);
 
-                const float w = poly6Kernel(r2, h);
-                if (w > 0.0f) {
-                    neighbourContributions.fetch_add(1, std::memory_order_relaxed);
-                    density += mass * w;
+            for (int cy = minY; cy <= maxY; ++cy) {
+                for (int cx = minX; cx <= maxX; ++cx) {
+                    const auto& bucket = gridBuckets_[static_cast<std::size_t>(cellIndex(cx, cy))];
+                    for (int j : bucket) {
+                        candidateReads.fetch_add(1, std::memory_order_relaxed);
+                        const Particle& pj = state_.particles[static_cast<std::size_t>(j)];
+                        const float dx = pi.position.x - pj.position.x;
+                        const float dy = pi.position.y - pj.position.y;
+                        const float r2 = dx * dx + dy * dy;
+
+                        const float w = poly6Kernel(r2, h);
+                        if (w > 0.0f) {
+                            neighbourContributions.fetch_add(1, std::memory_order_relaxed);
+                            density += mass * w;
+                        }
+                    }
                 }
             }
 
@@ -291,8 +295,9 @@ void SequentialStageRunner::executeDensityPressureReal(StageMetrics& metrics, in
     const auto t1 = std::chrono::steady_clock::now();
 
     const CycleCount neighbourReads = neighbourContributions.load(std::memory_order_relaxed);
+    const CycleCount candidateChecks = candidateReads.load(std::memory_order_relaxed);
     const CycleCount workCycles =
-        neighbourReads * 12 + static_cast<CycleCount>(n) * 14;
+        candidateChecks * 4 + neighbourReads * 12 + static_cast<CycleCount>(n) * 14;
     const CycleCount exposedStallCycles = estimateExposedStallCycles(StageId::DensityPressure, stepIndex);
 
     metrics.wallMs += std::chrono::duration<double, std::milli>(t1 - t0).count();
@@ -313,6 +318,7 @@ void SequentialStageRunner::executeForcesReal(StageMetrics& metrics, int stepInd
     const float densityFloor = state_.params.restDensity * state_.params.minDensityRatio;
 
     std::atomic<CycleCount> neighbourInteractions{0};
+    std::atomic<CycleCount> candidateReads{0};
 
     const int n = static_cast<int>(state_.particles.size());
     strategy_->runForRange(n, [&](int begin, int end, int) {
@@ -324,36 +330,47 @@ void SequentialStageRunner::executeForcesReal(StageMetrics& metrics, int stepInd
             float forceViscosityX = 0.0f;
             float forceViscosityY = 0.0f;
 
-            const auto& neighI = neighbours_[static_cast<std::size_t>(i)];
-            for (int j : neighI) {
-                if (j == i) continue;
+            int minX = 0;
+            int maxX = 0;
+            int minY = 0;
+            int maxY = 0;
+            neighbourCellBounds(pi, minX, maxX, minY, maxY);
 
-                const Particle& pj = state_.particles[static_cast<std::size_t>(j)];
-                const float dx = pi.position.x - pj.position.x;
-                const float dy = pi.position.y - pj.position.y;
-                const float r2 = dx * dx + dy * dy;
+            for (int cy = minY; cy <= maxY; ++cy) {
+                for (int cx = minX; cx <= maxX; ++cx) {
+                    const auto& bucket = gridBuckets_[static_cast<std::size_t>(cellIndex(cx, cy))];
+                    for (int j : bucket) {
+                        candidateReads.fetch_add(1, std::memory_order_relaxed);
+                        if (j == i) continue;
 
-                if (r2 >= h2) continue;
+                        const Particle& pj = state_.particles[static_cast<std::size_t>(j)];
+                        const float dx = pi.position.x - pj.position.x;
+                        const float dy = pi.position.y - pj.position.y;
+                        const float r2 = dx * dx + dy * dy;
 
-                const float r = std::sqrt(r2);
-                if (r <= 1e-6f) continue;
+                        if (r2 >= h2) continue;
 
-                neighbourInteractions.fetch_add(1, std::memory_order_relaxed);
+                        const float r = std::sqrt(r2);
+                        if (r <= 1e-6f) continue;
 
-                const float densityJ = std::max(pj.density, densityFloor);
-                const float invR = 1.0f / r;
+                        neighbourInteractions.fetch_add(1, std::memory_order_relaxed);
 
-                const float gradFactor = spikyGradFactor(r, h);
-                const float gradWx = gradFactor * dx * invR;
-                const float gradWy = gradFactor * dy * invR;
+                        const float densityJ = std::max(pj.density, densityFloor);
+                        const float invR = 1.0f / r;
 
-                const float pressureTerm = mass * (pi.pressure + pj.pressure) / (2.0f * densityJ);
-                forcePressureX += -pressureTerm * gradWx;
-                forcePressureY += -pressureTerm * gradWy;
+                        const float gradFactor = spikyGradFactor(r, h);
+                        const float gradWx = gradFactor * dx * invR;
+                        const float gradWy = gradFactor * dy * invR;
 
-                const float lap = viscosityLaplacian(r, h);
-                forceViscosityX += viscosity * mass * (pj.velocity.x - pi.velocity.x) * lap / densityJ;
-                forceViscosityY += viscosity * mass * (pj.velocity.y - pi.velocity.y) * lap / densityJ;
+                        const float pressureTerm = mass * (pi.pressure + pj.pressure) / (2.0f * densityJ);
+                        forcePressureX += -pressureTerm * gradWx;
+                        forcePressureY += -pressureTerm * gradWy;
+
+                        const float lap = viscosityLaplacian(r, h);
+                        forceViscosityX += viscosity * mass * (pj.velocity.x - pi.velocity.x) * lap / densityJ;
+                        forceViscosityY += viscosity * mass * (pj.velocity.y - pi.velocity.y) * lap / densityJ;
+                    }
+                }
             }
 
             pi.force.x = forcePressureX + forceViscosityX;
@@ -364,8 +381,9 @@ void SequentialStageRunner::executeForcesReal(StageMetrics& metrics, int stepInd
 
     const auto t1 = std::chrono::steady_clock::now();
 
+    const CycleCount candidateChecks = candidateReads.load(std::memory_order_relaxed);
     const CycleCount workCycles =
-        neighbourInteractions.load(std::memory_order_relaxed) * 26 + static_cast<CycleCount>(n) * 18;
+        candidateChecks * 5 + neighbourInteractions.load(std::memory_order_relaxed) * 26 + static_cast<CycleCount>(n) * 18;
     const CycleCount exposedStallCycles = estimateExposedStallCycles(StageId::Forces, stepIndex);
 
     metrics.wallMs += std::chrono::duration<double, std::milli>(t1 - t0).count();
@@ -539,6 +557,39 @@ CycleCount SequentialStageRunner::estimateExposedStallCycles(StageId stage, int 
         static_cast<CycleCount>(config_.seed + 31 * stepIndex + static_cast<int>(stage));
     const CycleCount events = (key % 5) + 1;
     return events * 120;
+}
+
+int SequentialStageRunner::clampCellX(int cellX) const {
+    if (cellX < 0) return 0;
+    if (cellX >= gridWidth_) return gridWidth_ - 1;
+    return cellX;
+}
+
+int SequentialStageRunner::clampCellY(int cellY) const {
+    if (cellY < 0) return 0;
+    if (cellY >= gridHeight_) return gridHeight_ - 1;
+    return cellY;
+}
+
+int SequentialStageRunner::cellIndex(int cellX, int cellY) const {
+    return cellY * gridWidth_ + cellX;
+}
+
+void SequentialStageRunner::neighbourCellBounds(
+    const Particle& particle,
+    int& minX,
+    int& maxX,
+    int& minY,
+    int& maxY) const {
+    int cx = static_cast<int>(std::floor(particle.position.x / gridCellSize_));
+    int cy = static_cast<int>(std::floor(particle.position.y / gridCellSize_));
+    cx = clampCellX(cx);
+    cy = clampCellY(cy);
+
+    minX = clampCellX(cx - 1);
+    maxX = clampCellX(cx + 1);
+    minY = clampCellY(cy - 1);
+    maxY = clampCellY(cy + 1);
 }
 
 } // namespace sim
