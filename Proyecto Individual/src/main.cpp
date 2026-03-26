@@ -1,8 +1,12 @@
 #include "simulation/SequentialStageRunner.h"
+#include "threads/FGMTRoundRobinStrategy.h"
+#include "threads/ParallelChunkedThreadStrategy.h"
+#include "threads/SequentialThreadStrategy.h"
 
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <memory>
 
 namespace {
 
@@ -105,12 +109,29 @@ int main(int argc, char* argv[]) {
     sim::RunConfig cfg;
     cfg.steps = (argc >= 2) ? std::stoi(argv[1]) : 120;
     cfg.particles = (argc >= 3) ? std::stoi(argv[2]) : 2000;
-    cfg.threads = 1;
+    cfg.threads = (argc >= 4) ? std::stoi(argv[3]) : 1;
     cfg.dt = 0.003f;
     cfg.seed = 20260324ULL;
 
-    sim::SequentialStageRunner runner;
+    std::string strategyArg = (argc >= 5) ? argv[4] : "sequential";
+    const int fgmtQuantum = (argc >= 6) ? std::stoi(argv[5]) : 16;
+
+    std::unique_ptr<th::ThreadStrategyContract> strategy;
+    if (strategyArg == "chunked") {
+        strategy = std::make_unique<th::ParallelChunkedThreadStrategy>();
+    } else if (strategyArg == "fgmt") {
+        strategy = std::make_unique<th::FGMTRoundRobinStrategy>(fgmtQuantum);
+    } else {
+        strategy = std::make_unique<th::SequentialThreadStrategy>();
+        strategyArg = "sequential";
+    }
+
+    sim::SequentialStageRunner runner(std::move(strategy));
     runner.initialize(cfg);
+    std::cout << "Execution strategy: " << strategyArg << " (threads=" << cfg.threads << ")\n";
+    if (strategyArg == "fgmt") {
+        std::cout << "FGMT simulated quantum (items): " << fgmtQuantum << "\n";
+    }
     printInitialParticleSample(runner.state());
 
     runner.runAllSteps();

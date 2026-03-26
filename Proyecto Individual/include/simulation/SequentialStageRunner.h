@@ -2,6 +2,9 @@
 
 #include "simulation/StageRunnerContract.h"
 #include "simulation/SPHDataModel.h"
+#include "threads/ThreadStrategyContract.h"
+
+#include <memory>
 
 namespace sim {
 
@@ -16,7 +19,7 @@ public:
         int invalidParticleCount = 0;
     };
 
-    SequentialStageRunner() = default;
+    explicit SequentialStageRunner(std::unique_ptr<th::ThreadStrategyContract> strategy = nullptr);
 
     void initialize(const RunConfig& config) override;
     void runStage(StageContext& context) override;
@@ -35,6 +38,7 @@ private:
     SPHState state_{};
      std::vector<std::vector<int>> neighbours_{};
     std::vector<StepMetricsSnapshot> stepSnapshots_{};
+    std::unique_ptr<th::ThreadStrategyContract> strategy_{};
     bool initialized_ = false;
 
     void resetMetrics();

@@ -1,6 +1,8 @@
 #include "simulation/SequentialStageRunner.h"
+#include "threads/SequentialThreadStrategy.h"
 
 #include <algorithm>
+#include <atomic>
 #include <chrono>
 #include <cmath>
 #include <limits>
@@ -42,6 +44,13 @@ float viscosityLaplacian(float distance, float smoothingRadius) {
 
 } // namespace
 
+SequentialStageRunner::SequentialStageRunner(std::unique_ptr<th::ThreadStrategyContract> strategy)
+    : strategy_(std::move(strategy)) {
+    if (!strategy_) {
+        strategy_ = std::make_unique<th::SequentialThreadStrategy>();
+    }
+}
+
 void SequentialStageRunner::initialize(const RunConfig& config) {
     config_ = config;
 
@@ -54,6 +63,8 @@ void SequentialStageRunner::initialize(const RunConfig& config) {
     neighbours_.assign(state_.particles.size(), {});
     stepSnapshots_.clear();
     stepSnapshots_.reserve(static_cast<std::size_t>(config_.steps));
+
+    strategy_->configure(config_.threads);
 
     resetMetrics();
     initialized_ = true;
@@ -118,7 +129,7 @@ SequentialStageRunner::stepSnapshots() const {
 }
 
 std::string SequentialStageRunner::modelName() const {
-    return "Sequential";
+    return strategy_ ? strategy_->name() : "Sequential";
 }
 
 void SequentialStageRunner::resetMetrics() {
@@ -248,35 +259,38 @@ void SequentialStageRunner::executeDensityPressureReal(StageMetrics& metrics, in
     const float densityFloor = restDensity * state_.params.minDensityRatio;
     const float maxPressure = state_.params.maxPressure;
 
-    CycleCount neighbourContributions = 0;
+    std::atomic<CycleCount> neighbourContributions{0};
 
     const int n = static_cast<int>(state_.particles.size());
-    for (int i = 0; i < n; ++i) {
-        Particle& pi = state_.particles[static_cast<std::size_t>(i)];
-        float density = 0.0f;
+    strategy_->runForRange(n, [&](int begin, int end, int) {
+        for (int i = begin; i < end; ++i) {
+            Particle& pi = state_.particles[static_cast<std::size_t>(i)];
+            float density = 0.0f;
 
-        const auto& neighI = neighbours_[static_cast<std::size_t>(i)];
-        for (int j : neighI) {
-            const Particle& pj = state_.particles[static_cast<std::size_t>(j)];
-            const float dx = pi.position.x - pj.position.x;
-            const float dy = pi.position.y - pj.position.y;
-            const float r2 = dx * dx + dy * dy;
+            const auto& neighI = neighbours_[static_cast<std::size_t>(i)];
+            for (int j : neighI) {
+                const Particle& pj = state_.particles[static_cast<std::size_t>(j)];
+                const float dx = pi.position.x - pj.position.x;
+                const float dy = pi.position.y - pj.position.y;
+                const float r2 = dx * dx + dy * dy;
 
-            const float w = poly6Kernel(r2, h);
-            if (w > 0.0f) {
-                ++neighbourContributions;
-                density += mass * w;
+                const float w = poly6Kernel(r2, h);
+                if (w > 0.0f) {
+                    neighbourContributions.fetch_add(1, std::memory_order_relaxed);
+                    density += mass * w;
+                }
             }
-        }
 
-        pi.density = std::max(density, densityFloor);
-        const float unclampedPressure = gasConstant * (pi.density - restDensity);
-        pi.pressure = std::clamp(unclampedPressure, -maxPressure, maxPressure);
-    }
+            pi.density = std::max(density, densityFloor);
+            const float unclampedPressure = gasConstant * (pi.density - restDensity);
+            pi.pressure = std::clamp(unclampedPressure, -maxPressure, maxPressure);
+        }
+    });
+    strategy_->barrier();
 
     const auto t1 = std::chrono::steady_clock::now();
 
-    const CycleCount neighbourReads = neighbourContributions;
+    const CycleCount neighbourReads = neighbourContributions.load(std::memory_order_relaxed);
     const CycleCount workCycles =
         neighbourReads * 12 + static_cast<CycleCount>(n) * 14;
     const CycleCount exposedStallCycles = estimateExposedStallCycles(StageId::DensityPressure, stepIndex);
@@ -298,57 +312,60 @@ void SequentialStageRunner::executeForcesReal(StageMetrics& metrics, int stepInd
     const float gravity = state_.params.gravity;
     const float densityFloor = state_.params.restDensity * state_.params.minDensityRatio;
 
-    CycleCount neighbourInteractions = 0;
+    std::atomic<CycleCount> neighbourInteractions{0};
 
     const int n = static_cast<int>(state_.particles.size());
-    for (int i = 0; i < n; ++i) {
-        Particle& pi = state_.particles[static_cast<std::size_t>(i)];
+    strategy_->runForRange(n, [&](int begin, int end, int) {
+        for (int i = begin; i < end; ++i) {
+            Particle& pi = state_.particles[static_cast<std::size_t>(i)];
 
-        float forcePressureX = 0.0f;
-        float forcePressureY = 0.0f;
-        float forceViscosityX = 0.0f;
-        float forceViscosityY = 0.0f;
+            float forcePressureX = 0.0f;
+            float forcePressureY = 0.0f;
+            float forceViscosityX = 0.0f;
+            float forceViscosityY = 0.0f;
 
-        const auto& neighI = neighbours_[static_cast<std::size_t>(i)];
-        for (int j : neighI) {
-            if (j == i) continue;
+            const auto& neighI = neighbours_[static_cast<std::size_t>(i)];
+            for (int j : neighI) {
+                if (j == i) continue;
 
-            const Particle& pj = state_.particles[static_cast<std::size_t>(j)];
-            const float dx = pi.position.x - pj.position.x;
-            const float dy = pi.position.y - pj.position.y;
-            const float r2 = dx * dx + dy * dy;
+                const Particle& pj = state_.particles[static_cast<std::size_t>(j)];
+                const float dx = pi.position.x - pj.position.x;
+                const float dy = pi.position.y - pj.position.y;
+                const float r2 = dx * dx + dy * dy;
 
-            if (r2 >= h2) continue;
+                if (r2 >= h2) continue;
 
-            const float r = std::sqrt(r2);
-            if (r <= 1e-6f) continue;
+                const float r = std::sqrt(r2);
+                if (r <= 1e-6f) continue;
 
-            ++neighbourInteractions;
+                neighbourInteractions.fetch_add(1, std::memory_order_relaxed);
 
-            const float densityJ = std::max(pj.density, densityFloor);
-            const float invR = 1.0f / r;
+                const float densityJ = std::max(pj.density, densityFloor);
+                const float invR = 1.0f / r;
 
-            const float gradFactor = spikyGradFactor(r, h);
-            const float gradWx = gradFactor * dx * invR;
-            const float gradWy = gradFactor * dy * invR;
+                const float gradFactor = spikyGradFactor(r, h);
+                const float gradWx = gradFactor * dx * invR;
+                const float gradWy = gradFactor * dy * invR;
 
-            const float pressureTerm = mass * (pi.pressure + pj.pressure) / (2.0f * densityJ);
-            forcePressureX += -pressureTerm * gradWx;
-            forcePressureY += -pressureTerm * gradWy;
+                const float pressureTerm = mass * (pi.pressure + pj.pressure) / (2.0f * densityJ);
+                forcePressureX += -pressureTerm * gradWx;
+                forcePressureY += -pressureTerm * gradWy;
 
-            const float lap = viscosityLaplacian(r, h);
-            forceViscosityX += viscosity * mass * (pj.velocity.x - pi.velocity.x) * lap / densityJ;
-            forceViscosityY += viscosity * mass * (pj.velocity.y - pi.velocity.y) * lap / densityJ;
+                const float lap = viscosityLaplacian(r, h);
+                forceViscosityX += viscosity * mass * (pj.velocity.x - pi.velocity.x) * lap / densityJ;
+                forceViscosityY += viscosity * mass * (pj.velocity.y - pi.velocity.y) * lap / densityJ;
+            }
+
+            pi.force.x = forcePressureX + forceViscosityX;
+            pi.force.y = forcePressureY + forceViscosityY + gravity * pi.density;
         }
-
-        pi.force.x = forcePressureX + forceViscosityX;
-        pi.force.y = forcePressureY + forceViscosityY + gravity * pi.density;
-    }
+    });
+    strategy_->barrier();
 
     const auto t1 = std::chrono::steady_clock::now();
 
     const CycleCount workCycles =
-        neighbourInteractions * 26 + static_cast<CycleCount>(n) * 18;
+        neighbourInteractions.load(std::memory_order_relaxed) * 26 + static_cast<CycleCount>(n) * 18;
     const CycleCount exposedStallCycles = estimateExposedStallCycles(StageId::Forces, stepIndex);
 
     metrics.wallMs += std::chrono::duration<double, std::milli>(t1 - t0).count();

@@ -8,6 +8,9 @@ add_executable(lab_runner
     src/main.cpp
     src/simulation/SPHDataModel.cpp
     src/simulation/SequentialStageRunner.cpp
+    src/threads/SequentialThreadStrategy.cpp
+    src/threads/ParallelChunkedThreadStrategy.cpp
+    src/threads/FGMTRoundRobinStrategy.cpp
 )
 
 target_include_directories(lab_runner PRIVATE
