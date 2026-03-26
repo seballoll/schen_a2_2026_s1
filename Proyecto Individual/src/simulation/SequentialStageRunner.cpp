@@ -147,6 +147,11 @@ void SequentialStageRunner::executeStageSynthetic(StageId stage, int stepIndex) 
         return;
     }
 
+    if (stage == StageId::Integrate) {
+        executeIntegrateReal(m);
+        return;
+    }
+
     const auto t0 = std::chrono::steady_clock::now();
 
     const CycleCount workCycles = estimateWorkCycles(stage);
@@ -286,6 +291,36 @@ void SequentialStageRunner::executeForcesReal(StageMetrics& metrics, int stepInd
     metrics.idleCycles += exposedStallCycles;
     metrics.stallExposedCycles += exposedStallCycles;
     metrics.totalCycles += workCycles + exposedStallCycles;
+}
+
+void SequentialStageRunner::executeIntegrateReal(StageMetrics& metrics) {
+    const auto t0 = std::chrono::steady_clock::now();
+
+    const float dt = config_.dt;
+    const float densityFloor = state_.params.restDensity * 0.01f;
+
+    const int n = static_cast<int>(state_.particles.size());
+    for (int i = 0; i < n; ++i) {
+        Particle& p = state_.particles[static_cast<std::size_t>(i)];
+
+        const float safeDensity = std::max(p.density, densityFloor);
+        const float ax = p.force.x / safeDensity;
+        const float ay = p.force.y / safeDensity;
+
+        p.velocity.x += ax * dt;
+        p.velocity.y += ay * dt;
+
+        p.position.x += p.velocity.x * dt;
+        p.position.y += p.velocity.y * dt;
+    }
+
+    const auto t1 = std::chrono::steady_clock::now();
+
+    const CycleCount workCycles = static_cast<CycleCount>(n) * 20;
+
+    metrics.wallMs += std::chrono::duration<double, std::milli>(t1 - t0).count();
+    metrics.workCycles += workCycles;
+    metrics.totalCycles += workCycles;
 }
 
 CycleCount SequentialStageRunner::baseCyclesPerParticle(StageId stage) const {
