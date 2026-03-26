@@ -1,6 +1,0 @@
-/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_vscode/CMakeFiles/sph_simulation.dir
-/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_vscode/CMakeFiles/sph_compare.dir
-/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_vscode/CMakeFiles/sph_benchmark.dir
-/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_vscode/CMakeFiles/sph_dummy.dir
-/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_vscode/CMakeFiles/edit_cache.dir
-/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_vscode/CMakeFiles/rebuild_cache.dir

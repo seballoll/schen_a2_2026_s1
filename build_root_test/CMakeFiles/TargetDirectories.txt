@@ -1,5 +1,0 @@
-/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/CMakeFiles/edit_cache.dir
-/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/CMakeFiles/rebuild_cache.dir
-/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual/CMakeFiles/lab_runner.dir
-/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual/CMakeFiles/edit_cache.dir
-/home/sebas/Documents/GitHub/schen_a2_2026_s1/build_root_test/Proyecto Individual/CMakeFiles/rebuild_cache.dir
