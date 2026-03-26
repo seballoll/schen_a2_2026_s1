@@ -51,12 +51,13 @@ void printRunSummary(const sim::SequentialStageRunner& runner, const sim::RunCon
 
 void printPostRunDensityPressureSample(const sim::SPHState& state) {
     const auto& particles = state.particles;
-    std::cout << "\nPost-run density/pressure sample (first 3):\n";
+    std::cout << "\nPost-run density/pressure/force sample (first 3):\n";
     for (int i = 0; i < 3 && i < static_cast<int>(particles.size()); ++i) {
         const auto& p = particles[static_cast<std::size_t>(i)];
         std::cout << "  p" << i
                   << " rho=" << p.density
                   << " P=" << p.pressure
+                  << " F=(" << p.force.x << ", " << p.force.y << ")"
                   << "\n";
     }
 }

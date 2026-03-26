@@ -29,6 +29,7 @@ private:
     StageMetrics& stageMetricsRef(StageId stage);
     void executeStageSynthetic(StageId stage, int stepIndex);
     void executeDensityPressureReal(StageMetrics& metrics, int stepIndex);
+    void executeForcesReal(StageMetrics& metrics, int stepIndex);
 
     CycleCount baseCyclesPerParticle(StageId stage) const;
     CycleCount estimateWorkCycles(StageId stage) const;
