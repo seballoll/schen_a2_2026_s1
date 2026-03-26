@@ -13,6 +13,7 @@ public:
 
 private:
     int workers_ = 1;
+    bool shouldYieldOnStall(int workerId, int cursor) const;
 };
 
 } // namespace th
