@@ -44,3 +44,5 @@
 .vscode/
 build_root_test/
 build_vscode/
+.venv/
+benchmark_artifacts/
