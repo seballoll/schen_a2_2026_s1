@@ -1,4 +1,6 @@
 #include "simulation/SequentialStageRunner.h"
+#include "threads/FGMTRoundRobinStrategy.h"
+#include "threads/ParallelChunkedThreadStrategy.h"
 #include "threads/SequentialThreadStrategy.h"
 
 #include <algorithm>
@@ -298,13 +300,26 @@ void SequentialStageRunner::executeDensityPressureReal(StageMetrics& metrics, in
     const CycleCount candidateChecks = candidateReads.load(std::memory_order_relaxed);
     const CycleCount workCycles =
         candidateChecks * 4 + neighbourReads * 12 + static_cast<CycleCount>(n) * 14;
-    const CycleCount exposedStallCycles = estimateExposedStallCycles(StageId::DensityPressure, stepIndex);
+    CycleCount contextSwitchCycles = 0;
+    CycleCount hiddenStallCycles = 0;
+    CycleCount exposedStallCycles = 0;
+    estimateStageStallBreakdown(
+        StageId::DensityPressure,
+        stepIndex,
+        n,
+        candidateChecks,
+        neighbourReads,
+        contextSwitchCycles,
+        hiddenStallCycles,
+        exposedStallCycles);
 
     metrics.wallMs += std::chrono::duration<double, std::milli>(t1 - t0).count();
     metrics.workCycles += workCycles;
-    metrics.idleCycles += exposedStallCycles;
+    metrics.idleCycles += contextSwitchCycles + exposedStallCycles;
+    metrics.contextSwitchCycles += contextSwitchCycles;
+    metrics.stallHiddenCycles += hiddenStallCycles;
     metrics.stallExposedCycles += exposedStallCycles;
-    metrics.totalCycles += workCycles + exposedStallCycles;
+    metrics.totalCycles += workCycles + contextSwitchCycles + exposedStallCycles;
 }
 
 void SequentialStageRunner::executeForcesReal(StageMetrics& metrics, int stepIndex) {
@@ -382,15 +397,29 @@ void SequentialStageRunner::executeForcesReal(StageMetrics& metrics, int stepInd
     const auto t1 = std::chrono::steady_clock::now();
 
     const CycleCount candidateChecks = candidateReads.load(std::memory_order_relaxed);
+    const CycleCount interactions = neighbourInteractions.load(std::memory_order_relaxed);
     const CycleCount workCycles =
-        candidateChecks * 5 + neighbourInteractions.load(std::memory_order_relaxed) * 26 + static_cast<CycleCount>(n) * 18;
-    const CycleCount exposedStallCycles = estimateExposedStallCycles(StageId::Forces, stepIndex);
+        candidateChecks * 5 + interactions * 26 + static_cast<CycleCount>(n) * 18;
+    CycleCount contextSwitchCycles = 0;
+    CycleCount hiddenStallCycles = 0;
+    CycleCount exposedStallCycles = 0;
+    estimateStageStallBreakdown(
+        StageId::Forces,
+        stepIndex,
+        n,
+        candidateChecks,
+        interactions,
+        contextSwitchCycles,
+        hiddenStallCycles,
+        exposedStallCycles);
 
     metrics.wallMs += std::chrono::duration<double, std::milli>(t1 - t0).count();
     metrics.workCycles += workCycles;
-    metrics.idleCycles += exposedStallCycles;
+    metrics.idleCycles += contextSwitchCycles + exposedStallCycles;
+    metrics.contextSwitchCycles += contextSwitchCycles;
+    metrics.stallHiddenCycles += hiddenStallCycles;
     metrics.stallExposedCycles += exposedStallCycles;
-    metrics.totalCycles += workCycles + exposedStallCycles;
+    metrics.totalCycles += workCycles + contextSwitchCycles + exposedStallCycles;
 }
 
 void SequentialStageRunner::executeIntegrateReal(StageMetrics& metrics) {
@@ -557,6 +586,69 @@ CycleCount SequentialStageRunner::estimateExposedStallCycles(StageId stage, int 
         static_cast<CycleCount>(config_.seed + 31 * stepIndex + static_cast<int>(stage));
     const CycleCount events = (key % 5) + 1;
     return events * 120;
+}
+
+int SequentialStageRunner::activeWorkersForCycles(int itemCount) const {
+    const int requestedWorkers = std::max(1, config_.threads);
+    return std::max(1, std::min(requestedWorkers, itemCount));
+}
+
+void SequentialStageRunner::estimateStageStallBreakdown(
+    StageId stage,
+    int stepIndex,
+    int itemCount,
+    CycleCount candidateChecks,
+    CycleCount interactions,
+    CycleCount& contextSwitchCycles,
+    CycleCount& hiddenStallCycles,
+    CycleCount& exposedStallCycles) const {
+    contextSwitchCycles = 0;
+    hiddenStallCycles = 0;
+    exposedStallCycles = 0;
+
+    if (stage != StageId::DensityPressure && stage != StageId::Forces) {
+        return;
+    }
+
+    const int workers = activeWorkersForCycles(itemCount);
+    const bool isSequential = dynamic_cast<const th::SequentialThreadStrategy*>(strategy_.get()) != nullptr;
+    const bool isChunked = dynamic_cast<const th::ParallelChunkedThreadStrategy*>(strategy_.get()) != nullptr;
+    const auto* fgmt = dynamic_cast<const th::FGMTRoundRobinStrategy*>(strategy_.get());
+
+    const CycleCount stageBase = (stage == StageId::DensityPressure) ? 120ULL : 180ULL;
+    const CycleCount memoryStalls = candidateChecks * ((stage == StageId::DensityPressure) ? 2ULL : 3ULL);
+    const CycleCount interactionStalls = interactions * ((stage == StageId::DensityPressure) ? 1ULL : 2ULL);
+    const CycleCount jitter = static_cast<CycleCount>((config_.seed + 17 * stepIndex + static_cast<int>(stage)) % 7);
+    const CycleCount rawStallCycles = stageBase + memoryStalls + interactionStalls + jitter * 15ULL;
+
+    if (isSequential) {
+        exposedStallCycles = rawStallCycles;
+        return;
+    }
+
+    if (fgmt != nullptr) {
+        const CycleCount workerTerm = static_cast<CycleCount>(std::max(0, workers - 1));
+        const CycleCount hiddenPercent = std::min<CycleCount>(80ULL, 35ULL + workerTerm * 12ULL);
+        hiddenStallCycles = (rawStallCycles * hiddenPercent) / 100ULL;
+        exposedStallCycles = rawStallCycles - hiddenStallCycles;
+
+        const int quantum = std::max(1, fgmt->quantumItems());
+        const CycleCount quanta = static_cast<CycleCount>((itemCount + quantum - 1) / quantum);
+        contextSwitchCycles = quanta * 16ULL + static_cast<CycleCount>(workers) * 18ULL;
+        return;
+    }
+
+    if (isChunked) {
+        const CycleCount workerTerm = static_cast<CycleCount>(std::max(0, workers - 1));
+        const CycleCount hiddenPercent = std::min<CycleCount>(60ULL, 15ULL + workerTerm * 10ULL);
+        hiddenStallCycles = (rawStallCycles * hiddenPercent) / 100ULL;
+        exposedStallCycles = rawStallCycles - hiddenStallCycles;
+
+        contextSwitchCycles = static_cast<CycleCount>(workers) * 40ULL + static_cast<CycleCount>((stepIndex % 3) + 1) * 20ULL;
+        return;
+    }
+
+    exposedStallCycles = rawStallCycles;
 }
 
 int SequentialStageRunner::clampCellX(int cellX) const {

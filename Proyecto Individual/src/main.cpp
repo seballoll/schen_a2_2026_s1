@@ -40,6 +40,9 @@ void printRunSummary(const sim::SequentialStageRunner& runner, const sim::RunCon
               << std::setw(12) << "Wall(ms)"
               << std::setw(14) << "WorkCycles"
               << std::setw(14) << "IdleCycles"
+              << std::setw(14) << "CtxSwitch"
+              << std::setw(14) << "HiddenStall"
+              << std::setw(14) << "ExposedStl"
               << std::setw(14) << "TotalCycles"
               << "\n";
 
@@ -49,6 +52,9 @@ void printRunSummary(const sim::SequentialStageRunner& runner, const sim::RunCon
                   << std::setw(12) << std::fixed << std::setprecision(3) << stageMetrics.wallMs
                   << std::setw(14) << stageMetrics.workCycles
                   << std::setw(14) << stageMetrics.idleCycles
+                  << std::setw(14) << stageMetrics.contextSwitchCycles
+                  << std::setw(14) << stageMetrics.stallHiddenCycles
+                  << std::setw(14) << stageMetrics.stallExposedCycles
                   << std::setw(14) << stageMetrics.totalCycles
                   << "\n";
     }

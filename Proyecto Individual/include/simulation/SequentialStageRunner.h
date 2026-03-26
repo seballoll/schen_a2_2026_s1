@@ -59,6 +59,16 @@ private:
     int clampCellY(int cellY) const;
     int cellIndex(int cellX, int cellY) const;
     void neighbourCellBounds(const Particle& particle, int& minX, int& maxX, int& minY, int& maxY) const;
+    int activeWorkersForCycles(int itemCount) const;
+    void estimateStageStallBreakdown(
+        StageId stage,
+        int stepIndex,
+        int itemCount,
+        CycleCount candidateChecks,
+        CycleCount interactions,
+        CycleCount& contextSwitchCycles,
+        CycleCount& hiddenStallCycles,
+        CycleCount& exposedStallCycles) const;
 
     CycleCount baseCyclesPerParticle(StageId stage) const;
     CycleCount estimateWorkCycles(StageId stage) const;
