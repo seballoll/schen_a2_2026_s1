@@ -6,14 +6,13 @@
 namespace th {
 
 using Task = std::function<void(int begin, int end, int workerId)>;
-using String = std::string;
 
 class ThreadStrategyContract {
 public:
     virtual ~ThreadStrategyContract() = default;
 
     // Nombre del modelo de ejecucion.
-    virtual String name() const = 0;
+    virtual std::string name() const = 0;
 
     // Configuracion inicial de workers/scheduler.
     virtual void configure(int workers) = 0;

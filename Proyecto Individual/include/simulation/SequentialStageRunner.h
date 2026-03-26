@@ -1,6 +1,7 @@
 #pragma once
 
 #include "simulation/StageRunnerContract.h"
+#include "simulation/SPHDataModel.h"
 
 namespace sim {
 
@@ -15,20 +16,23 @@ public:
 
     const std::vector<StageMetrics>& stageMetrics() const override;
     const RunMetrics& runMetrics() const override;
-    String modelName() const override;
+    std::string modelName() const override;
+    const SPHState& state() const;
 
 private:
     RunConfig config_{};
     RunMetrics runMetrics_{};
+    SPHState state_{};
     bool initialized_ = false;
 
     void resetMetrics();
-    StageMetrics& metricsFor(StageId stage);
-    void executeStage(StageId stage, int stepIndex);
+    StageMetrics& stageMetricsRef(StageId stage);
+    void executeStageSynthetic(StageId stage, int stepIndex);
+    void executeDensityPressureReal(StageMetrics& metrics, int stepIndex);
 
-    U64 baseWorkCycles(StageId stage) const;
-    U64 stageWorkCycles(StageId stage) const;
-    U64 stageStallCycles(StageId stage, int stepIndex) const;
+    CycleCount baseCyclesPerParticle(StageId stage) const;
+    CycleCount estimateWorkCycles(StageId stage) const;
+    CycleCount estimateExposedStallCycles(StageId stage, int stepIndex) const;
 };
 
 } // namespace sim

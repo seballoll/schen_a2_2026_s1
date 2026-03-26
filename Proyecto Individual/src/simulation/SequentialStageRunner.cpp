@@ -1,9 +1,26 @@
 #include "simulation/SequentialStageRunner.h"
 
+#include <algorithm>
 #include <chrono>
+#include <cmath>
 #include <stdexcept>
 
 namespace sim {
+
+namespace {
+
+float poly6Kernel(float distanceSquared, float smoothingRadius) {
+    const float h2 = smoothingRadius * smoothingRadius;
+    if (distanceSquared >= h2) return 0.0f;
+
+    const float x = h2 - distanceSquared;
+    const float pi = 3.14159265359f;
+    const float h9 = std::pow(smoothingRadius, 9.0f);
+    const float coeff = 315.0f / (64.0f * pi * h9);
+    return coeff * x * x * x;
+}
+
+} // namespace
 
 void SequentialStageRunner::initialize(const RunConfig& config) {
     config_ = config;
@@ -11,6 +28,9 @@ void SequentialStageRunner::initialize(const RunConfig& config) {
     if (config_.steps <= 0) config_.steps = 1;
     if (config_.particles <= 0) config_.particles = 1;
     if (config_.threads <= 0) config_.threads = 1;
+
+    state_ = {};
+    initializeDamBreak(state_, config_.particles);
 
     resetMetrics();
     initialized_ = true;
@@ -20,7 +40,7 @@ void SequentialStageRunner::runStage(StageContext& context) {
     if (!initialized_) {
         throw std::runtime_error("SequentialStageRunner no fue inicializado");
     }
-    executeStage(context.stage, context.stepIndex);
+    executeStageSynthetic(context.stage, context.stepIndex);
 }
 
 void SequentialStageRunner::runStep(int stepIndex) {
@@ -50,11 +70,11 @@ void SequentialStageRunner::runAllSteps() {
     runMetrics_.totalWallMs =
         std::chrono::duration<double, std::milli>(end - start).count();
 
-    U64 sumCycles = 0;
-    for (const auto& stage : runMetrics_.perStage) {
-        sumCycles += stage.totalCycles;
+    CycleCount accumulatedCycles = 0;
+    for (const auto& stageMetrics : runMetrics_.perStage) {
+        accumulatedCycles += stageMetrics.totalCycles;
     }
-    runMetrics_.totalCycles = sumCycles;
+    runMetrics_.totalCycles = accumulatedCycles;
 }
 
 const std::vector<StageMetrics>& SequentialStageRunner::stageMetrics() const {
@@ -65,7 +85,11 @@ const RunMetrics& SequentialStageRunner::runMetrics() const {
     return runMetrics_;
 }
 
-String SequentialStageRunner::modelName() const {
+const SPHState& SequentialStageRunner::state() const {
+    return state_;
+}
+
+std::string SequentialStageRunner::modelName() const {
     return "Sequential";
 }
 
@@ -84,38 +108,92 @@ void SequentialStageRunner::resetMetrics() {
     }
 }
 
-StageMetrics& SequentialStageRunner::metricsFor(StageId stage) {
+StageMetrics& SequentialStageRunner::stageMetricsRef(StageId stage) {
     for (auto& m : runMetrics_.perStage) {
         if (m.stage == stage) return m;
     }
-    throw std::runtime_error("Etapa no encontrada en metricsFor");
+    throw std::runtime_error("Etapa no encontrada en stageMetricsRef");
 }
 
-void SequentialStageRunner::executeStage(StageId stage, int stepIndex) {
-    auto& m = metricsFor(stage);
+void SequentialStageRunner::executeStageSynthetic(StageId stage, int stepIndex) {
+    auto& m = stageMetricsRef(stage);
+
+    if (stage == StageId::DensityPressure) {
+        executeDensityPressureReal(m, stepIndex);
+        return;
+    }
+
     const auto t0 = std::chrono::steady_clock::now();
 
-    const U64 work = stageWorkCycles(stage);
-    const U64 stallExposed = stageStallCycles(stage, stepIndex);
+    const CycleCount workCycles = estimateWorkCycles(stage);
+    const CycleCount exposedStallCycles = estimateExposedStallCycles(stage, stepIndex);
 
     // Trabajo sintetico minimo para que wall time no sea siempre cero.
-    volatile U64 sink = 0;
-    const int iterations = config_.particles / 4 + 1;
+    volatile CycleCount sink = 0;
+    const int particleCount = static_cast<int>(state_.particles.size());
+    const int iterations = particleCount / 4 + 1;
     for (int i = 0; i < iterations; ++i) {
-        sink += static_cast<U64>(i + stepIndex + static_cast<int>(stage));
+        sink += static_cast<CycleCount>(i + stepIndex + static_cast<int>(stage));
     }
     (void)sink;
 
     const auto t1 = std::chrono::steady_clock::now();
 
     m.wallMs += std::chrono::duration<double, std::milli>(t1 - t0).count();
-    m.workCycles += work;
-    m.idleCycles += stallExposed;
-    m.stallExposedCycles += stallExposed;
-    m.totalCycles += work + stallExposed;
+    m.workCycles += workCycles;
+    m.idleCycles += exposedStallCycles;
+    m.stallExposedCycles += exposedStallCycles;
+    m.totalCycles += workCycles + exposedStallCycles;
 }
 
-U64 SequentialStageRunner::baseWorkCycles(StageId stage) const {
+void SequentialStageRunner::executeDensityPressureReal(StageMetrics& metrics, int stepIndex) {
+    const auto t0 = std::chrono::steady_clock::now();
+
+    const float h = state_.params.particleSpacing * 2.0f;
+    const float mass = state_.params.particleMass;
+    const float restDensity = state_.params.restDensity;
+    const float gasConstant = state_.params.gasConstant;
+
+    CycleCount neighbourChecks = 0;
+    CycleCount neighbourContributions = 0;
+
+    const int n = static_cast<int>(state_.particles.size());
+    for (int i = 0; i < n; ++i) {
+        Particle& pi = state_.particles[static_cast<std::size_t>(i)];
+        float density = 0.0f;
+
+        for (int j = 0; j < n; ++j) {
+            const Particle& pj = state_.particles[static_cast<std::size_t>(j)];
+            const float dx = pi.position.x - pj.position.x;
+            const float dy = pi.position.y - pj.position.y;
+            const float r2 = dx * dx + dy * dy;
+
+            ++neighbourChecks;
+            const float w = poly6Kernel(r2, h);
+            if (w > 0.0f) {
+                ++neighbourContributions;
+                density += mass * w;
+            }
+        }
+
+        pi.density = std::max(density, restDensity * 0.01f);
+        pi.pressure = gasConstant * (pi.density - restDensity);
+    }
+
+    const auto t1 = std::chrono::steady_clock::now();
+
+    const CycleCount workCycles =
+        neighbourChecks * 4 + neighbourContributions * 10 + static_cast<CycleCount>(n) * 12;
+    const CycleCount exposedStallCycles = estimateExposedStallCycles(StageId::DensityPressure, stepIndex);
+
+    metrics.wallMs += std::chrono::duration<double, std::milli>(t1 - t0).count();
+    metrics.workCycles += workCycles;
+    metrics.idleCycles += exposedStallCycles;
+    metrics.stallExposedCycles += exposedStallCycles;
+    metrics.totalCycles += workCycles + exposedStallCycles;
+}
+
+CycleCount SequentialStageRunner::baseCyclesPerParticle(StageId stage) const {
     switch (stage) {
         case StageId::NeighbourStructure: return 14;
         case StageId::DensityPressure: return 38;
@@ -128,17 +206,18 @@ U64 SequentialStageRunner::baseWorkCycles(StageId stage) const {
     return 0;
 }
 
-U64 SequentialStageRunner::stageWorkCycles(StageId stage) const {
-    return baseWorkCycles(stage) * static_cast<U64>(config_.particles);
+CycleCount SequentialStageRunner::estimateWorkCycles(StageId stage) const {
+    return baseCyclesPerParticle(stage) * static_cast<CycleCount>(state_.particles.size());
 }
 
-U64 SequentialStageRunner::stageStallCycles(StageId stage, int stepIndex) const {
+CycleCount SequentialStageRunner::estimateExposedStallCycles(StageId stage, int stepIndex) const {
     if (stage != StageId::DensityPressure && stage != StageId::Forces) {
         return 0;
     }
 
-    const U64 key = static_cast<U64>(config_.seed + 31 * stepIndex + static_cast<int>(stage));
-    const U64 events = (key % 5) + 1;
+    const CycleCount key =
+        static_cast<CycleCount>(config_.seed + 31 * stepIndex + static_cast<int>(stage));
+    const CycleCount events = (key % 5) + 1;
     return events * 120;
 }
 

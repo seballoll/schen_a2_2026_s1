@@ -6,8 +6,7 @@
 
 namespace sim {
 
-using String = std::string;
-using U64 = std::uint64_t;
+using CycleCount = std::uint64_t;
 
 enum class StageId {
     Setup = 0,
@@ -24,7 +23,7 @@ struct RunConfig {
     int particles = 0;
     int threads = 1;
     float dt = 0.0f;
-    U64 seed = 0;
+    CycleCount seed = 0;
 };
 
 struct StageContext {
@@ -35,20 +34,20 @@ struct StageContext {
 
 struct StageMetrics {
     StageId stage = StageId::Setup;
-    String stageName;
+    std::string stageName;
 
     double wallMs = 0.0;
-    U64 totalCycles = 0;
-    U64 workCycles = 0;
-    U64 idleCycles = 0;
-    U64 contextSwitchCycles = 0;
-    U64 stallHiddenCycles = 0;
-    U64 stallExposedCycles = 0;
+    CycleCount totalCycles = 0;
+    CycleCount workCycles = 0;
+    CycleCount idleCycles = 0;
+    CycleCount contextSwitchCycles = 0;
+    CycleCount stallHiddenCycles = 0;
+    CycleCount stallExposedCycles = 0;
 };
 
 struct RunMetrics {
     double totalWallMs = 0.0;
-    U64 totalCycles = 0;
+    CycleCount totalCycles = 0;
     std::vector<StageMetrics> perStage;
 };
 
@@ -73,7 +72,7 @@ public:
     virtual const RunMetrics& runMetrics() const = 0;
 
     // Nombre legible del modelo (Sequential, FGMT, CGMT, SMT, CMP).
-    virtual String modelName() const = 0;
+    virtual std::string modelName() const = 0;
 };
 
 inline const char* stageName(StageId id) {

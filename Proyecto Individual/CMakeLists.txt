@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(lab_runner
     src/main.cpp
+    src/simulation/SPHDataModel.cpp
     src/simulation/SequentialStageRunner.cpp
 )
 
