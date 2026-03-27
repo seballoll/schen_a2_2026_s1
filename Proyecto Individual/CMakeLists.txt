@@ -11,6 +11,8 @@ add_executable(lab_runner
     src/threads/SequentialThreadStrategy.cpp
     src/threads/ParallelChunkedThreadStrategy.cpp
     src/threads/FGMTRoundRobinStrategy.cpp
+    src/threads/SMTThreadStrategy.cpp
+    src/threads/CMPThreadStrategy.cpp
 )
 
 target_include_directories(lab_runner PRIVATE

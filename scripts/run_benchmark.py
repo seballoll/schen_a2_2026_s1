@@ -59,6 +59,8 @@ def make_configs(thread_counts: List[int], fgmt_quantum: int) -> List[Config]:
     for t in thread_counts:
         configs.append(Config(name=f"chunked_t{t}", strategy="chunked", threads=t, quantum=None))
         configs.append(Config(name=f"fgmt_t{t}", strategy="fgmt", threads=t, quantum=fgmt_quantum))
+        configs.append(Config(name=f"smt_t{t}", strategy="smt", threads=t, quantum=None))
+        configs.append(Config(name=f"cmp_t{t}", strategy="cmp", threads=t, quantum=None))
     return configs
 
 

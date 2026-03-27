@@ -1,7 +1,9 @@
 #include "simulation/SequentialStageRunner.h"
+#include "threads/CMPThreadStrategy.h"
 #include "threads/FGMTRoundRobinStrategy.h"
 #include "threads/ParallelChunkedThreadStrategy.h"
 #include "threads/SequentialThreadStrategy.h"
+#include "threads/SMTThreadStrategy.h"
 
 #include <fstream>
 #include <iomanip>
@@ -127,6 +129,10 @@ int main(int argc, char* argv[]) {
         strategy = std::make_unique<th::ParallelChunkedThreadStrategy>();
     } else if (strategyArg == "fgmt") {
         strategy = std::make_unique<th::FGMTRoundRobinStrategy>(fgmtQuantum);
+    } else if (strategyArg == "smt") {
+        strategy = std::make_unique<th::SMTThreadStrategy>();
+    } else if (strategyArg == "cmp") {
+        strategy = std::make_unique<th::CMPThreadStrategy>();
     } else {
         strategy = std::make_unique<th::SequentialThreadStrategy>();
         strategyArg = "sequential";
