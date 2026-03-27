@@ -1,7 +1,7 @@
 BUILD_DIR := build_root_test
 PYTHON ?= python3
 
-.PHONY: setup-python build benchmark benchmark-quick
+.PHONY: setup-python build benchmark benchmark-quick perf-profile perf-profile-quick
 
 setup-python:
 	$(PYTHON) -m pip install --user --break-system-packages matplotlib
@@ -29,3 +29,21 @@ benchmark-quick: setup-python build
 		--thread-counts 2,4 \
 		--fgmt-quantum 12 \
 		--out-dir benchmark_artifacts/quick
+
+perf-profile: build
+	$(PYTHON) scripts/run_perf_profile.py \
+		--runner "$(BUILD_DIR)/Proyecto Individual/lab_runner" \
+		--runs 30 \
+		--steps 50 \
+		--particles 1200 \
+		--thread-counts 2,4 \
+		--out-dir benchmark_artifacts/perf
+
+perf-profile-quick: build
+	$(PYTHON) scripts/run_perf_profile.py \
+		--runner "$(BUILD_DIR)/Proyecto Individual/lab_runner" \
+		--runs 5 \
+		--steps 30 \
+		--particles 800 \
+		--thread-counts 2,4 \
+		--out-dir benchmark_artifacts/perf_quick
