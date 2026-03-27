@@ -16,8 +16,10 @@ benchmark: setup-python build
 		--runs 200 \
 		--steps 20 \
 		--particles 200 \
-		--thread-counts 2,4 \
+		--thread-counts 2,4,6,8,10,12,14,16,18 \
 		--fgmt-quantum 12 \
+		--cmp-disable-smt \
+		--smt-use-sudo \
 		--out-dir benchmark_artifacts
 
 benchmark-quick: setup-python build
@@ -26,8 +28,10 @@ benchmark-quick: setup-python build
 		--runs 20 \
 		--steps 20 \
 		--particles 200 \
-		--thread-counts 2,4 \
+		--thread-counts 2,4,6,8,10,12,14,16,18 \
 		--fgmt-quantum 12 \
+		--cmp-disable-smt \
+		--smt-use-sudo \
 		--out-dir benchmark_artifacts/quick
 
 perf-profile: build
@@ -36,7 +40,7 @@ perf-profile: build
 		--runs 30 \
 		--steps 50 \
 		--particles 1200 \
-		--thread-counts 2,4 \
+		--thread-counts 2,4,6,8,10,12,14,16,18 \
 		--out-dir benchmark_artifacts/perf
 
 perf-profile-quick: build
@@ -45,5 +49,5 @@ perf-profile-quick: build
 		--runs 5 \
 		--steps 30 \
 		--particles 800 \
-		--thread-counts 2,4 \
+		--thread-counts 2,4,6,8,10,12,14,16,18 \
 		--out-dir benchmark_artifacts/perf_quick
