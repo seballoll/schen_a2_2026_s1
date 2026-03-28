@@ -124,6 +124,19 @@ int main(int argc, char* argv[]) {
     std::string strategyArg = (argc >= 5) ? argv[4] : "sequential";
     const int fgmtQuantum = (argc >= 6) ? std::stoi(argv[5]) : 16;
 
+    // Optional deterministic seed argument:
+    // - For non-FGMT: argv[5] is seed.
+    // - For FGMT: argv[5] is quantum and argv[6] is seed.
+    if (strategyArg == "fgmt") {
+        if (argc >= 7) {
+            cfg.seed = static_cast<sim::CycleCount>(std::stoull(argv[6]));
+        }
+    } else {
+        if (argc >= 6) {
+            cfg.seed = static_cast<sim::CycleCount>(std::stoull(argv[5]));
+        }
+    }
+
     std::unique_ptr<th::ThreadStrategyContract> strategy;
     if (strategyArg == "chunked") {
         strategy = std::make_unique<th::ParallelChunkedThreadStrategy>();

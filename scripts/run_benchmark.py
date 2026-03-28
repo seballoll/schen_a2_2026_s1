@@ -30,6 +30,7 @@ class RunRow:
     threads: int
     quantum: int
     run_index: int
+    seed: int
     wall_ms: float
     total_cycles: int
 
@@ -47,7 +48,20 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--fgmt-quantum", type=int, default=16, help="FGMT simulated quantum.")
     parser.add_argument(
+        "--seed-start",
+        type=int,
+        default=1,
+        help="Seed used in round 0; round i uses seed_start + i across all configurations.",
+    )
+    parser.add_argument(
+        "--seed-mode",
+        choices=["per-round", "fixed"],
+        default="per-round",
+        help="Seed policy: per-round uses seed_start + run_index, fixed uses only seed_start.",
+    )
+    parser.add_argument(
         "--out-dir",
+        "--output-dir",
         default="benchmark_artifacts",
         help="Directory where CSV/statistics/plots are generated.",
     )
@@ -108,10 +122,13 @@ def set_smt_state(state: str, control_path: str, use_sudo: bool) -> None:
         )
 
 
-def run_single(runner: str, steps: int, particles: int, cfg: Config) -> Tuple[float, int]:
+def run_single(runner: str, steps: int, particles: int, cfg: Config, seed: int) -> Tuple[float, int]:
     cmd = [runner, str(steps), str(particles), str(cfg.threads), cfg.strategy]
     if cfg.strategy == "fgmt":
         cmd.append(str(cfg.quantum if cfg.quantum is not None else 16))
+        cmd.append(str(seed))
+    else:
+        cmd.append(str(seed))
 
     proc = subprocess.run(cmd, capture_output=True, text=True, check=True)
     text = proc.stdout
@@ -134,6 +151,7 @@ def write_raw_csv(rows: List[RunRow], path: Path) -> None:
                 "threads",
                 "quantum",
                 "run_index",
+                "seed",
                 "wall_ms",
                 "total_cycles",
             ]
@@ -146,6 +164,7 @@ def write_raw_csv(rows: List[RunRow], path: Path) -> None:
                     row.threads,
                     row.quantum,
                     row.run_index,
+                    row.seed,
                     f"{row.wall_ms:.8f}",
                     row.total_cycles,
                 ]
@@ -315,34 +334,54 @@ def generate_plots(rows: List[RunRow], out_dir: Path) -> None:
 
     fgmt_cycles: List[float] = []
     cgmt_cycles: List[float] = []
+    fgmt_wall: List[float] = []
+    cgmt_wall: List[float] = []
+    smt_cycles: List[float] = []
+    cmp_cycles: List[float] = []
     smt_wall: List[float] = []
     cmp_wall: List[float] = []
-    threads_for_cycle_plot: List[int] = []
-    threads_for_wall_plot: List[int] = []
+    threads_for_fgmt_cgmt_cycles: List[int] = []
+    threads_for_fgmt_cgmt_wall: List[int] = []
+    threads_for_smt_cmp_cycles: List[int] = []
+    threads_for_smt_cmp_wall: List[int] = []
 
     for t in thread_counts:
         fg = mean_metric("fgmt", t, "cycles")
         cg = mean_metric("chunked", t, "cycles")
         if fg is not None and cg is not None:
-            threads_for_cycle_plot.append(t)
+            threads_for_fgmt_cgmt_cycles.append(t)
             fgmt_cycles.append(fg)
             cgmt_cycles.append(cg)
+
+        fg_w = mean_metric("fgmt", t, "wall")
+        cg_w = mean_metric("chunked", t, "wall")
+        if fg_w is not None and cg_w is not None:
+            threads_for_fgmt_cgmt_wall.append(t)
+            fgmt_wall.append(fg_w)
+            cgmt_wall.append(cg_w)
+
+        smt_c = mean_metric("smt", t, "cycles")
+        cmp_c = mean_metric("cmp", t, "cycles")
+        if smt_c is not None and cmp_c is not None:
+            threads_for_smt_cmp_cycles.append(t)
+            smt_cycles.append(smt_c)
+            cmp_cycles.append(cmp_c)
 
         smt_v = mean_metric("smt", t, "wall")
         cmp_v = mean_metric("cmp", t, "wall")
         if smt_v is not None and cmp_v is not None:
-            threads_for_wall_plot.append(t)
+            threads_for_smt_cmp_wall.append(t)
             smt_wall.append(smt_v)
             cmp_wall.append(cmp_v)
 
-    if threads_for_cycle_plot:
-        baseline_cycles = [baseline_cycles_mean for _ in threads_for_cycle_plot]
+    if threads_for_fgmt_cgmt_cycles:
+        baseline_cycles = [baseline_cycles_mean for _ in threads_for_fgmt_cgmt_cycles]
 
         plt.figure(figsize=(10, 6))
-        plt.plot(threads_for_cycle_plot, fgmt_cycles, marker="o", linewidth=2.0, label="FGMT")
-        plt.plot(threads_for_cycle_plot, cgmt_cycles, marker="s", linewidth=2.0, label="CGMT (chunked)")
-        plt.plot(threads_for_cycle_plot, baseline_cycles, linestyle="--", linewidth=1.3, color="black", label="Sequential baseline")
-        plt.xticks(threads_for_cycle_plot, [str(t) for t in threads_for_cycle_plot])
+        plt.plot(threads_for_fgmt_cgmt_cycles, fgmt_cycles, marker="o", linewidth=2.0, label="FGMT")
+        plt.plot(threads_for_fgmt_cgmt_cycles, cgmt_cycles, marker="s", linewidth=2.0, label="CGMT (chunked)")
+        plt.plot(threads_for_fgmt_cgmt_cycles, baseline_cycles, linestyle="--", linewidth=1.3, color="black", label="Sequential baseline")
+        plt.xticks(threads_for_fgmt_cgmt_cycles, [str(t) for t in threads_for_fgmt_cgmt_cycles])
         plt.xlabel("Thread count")
         plt.ylabel("Mean total cycles")
         plt.title("Cycle trend vs thread count: FGMT and CGMT vs Sequential")
@@ -352,21 +391,69 @@ def generate_plots(rows: List[RunRow], out_dir: Path) -> None:
         plt.savefig(out_dir / "cycles_trend_fgmt_cgmt_vs_sequential.png", dpi=160)
         plt.close()
 
-    if threads_for_wall_plot:
-        baseline_wall = [baseline_wall_mean for _ in threads_for_wall_plot]
+    if threads_for_fgmt_cgmt_wall:
+        baseline_wall = [baseline_wall_mean for _ in threads_for_fgmt_cgmt_wall]
 
         plt.figure(figsize=(10, 6))
-        plt.plot(threads_for_wall_plot, smt_wall, marker="o", linewidth=2.0, label="SMT")
-        plt.plot(threads_for_wall_plot, cmp_wall, marker="s", linewidth=2.0, label="CMP")
+        plt.plot(threads_for_fgmt_cgmt_wall, fgmt_wall, marker="o", linewidth=2.0, label="FGMT")
+        plt.plot(threads_for_fgmt_cgmt_wall, cgmt_wall, marker="s", linewidth=2.0, label="CGMT (chunked)")
         plt.plot(
-            threads_for_wall_plot,
+            threads_for_fgmt_cgmt_wall,
             baseline_wall,
             linestyle="--",
             linewidth=1.3,
             color="black",
             label="Sequential baseline",
         )
-        plt.xticks(threads_for_wall_plot, [str(t) for t in threads_for_wall_plot])
+        plt.xticks(threads_for_fgmt_cgmt_wall, [str(t) for t in threads_for_fgmt_cgmt_wall])
+        plt.xlabel("Thread count")
+        plt.ylabel("Mean wall time (ms)")
+        plt.title("Execution time trend vs thread count: FGMT and CGMT vs Sequential")
+        plt.grid(axis="y", alpha=0.3)
+        plt.legend()
+        plt.tight_layout()
+        plt.savefig(out_dir / "wall_time_trend_fgmt_cgmt_vs_sequential.png", dpi=160)
+        plt.close()
+
+    if threads_for_smt_cmp_cycles:
+        baseline_cycles = [baseline_cycles_mean for _ in threads_for_smt_cmp_cycles]
+
+        plt.figure(figsize=(10, 6))
+        plt.plot(threads_for_smt_cmp_cycles, smt_cycles, marker="o", linewidth=2.0, label="SMT")
+        plt.plot(threads_for_smt_cmp_cycles, cmp_cycles, marker="s", linewidth=2.0, label="CMP")
+        plt.plot(
+            threads_for_smt_cmp_cycles,
+            baseline_cycles,
+            linestyle="--",
+            linewidth=1.3,
+            color="black",
+            label="Sequential baseline",
+        )
+        plt.xticks(threads_for_smt_cmp_cycles, [str(t) for t in threads_for_smt_cmp_cycles])
+        plt.xlabel("Thread count")
+        plt.ylabel("Mean total cycles")
+        plt.title("Cycle trend vs thread count: SMT and CMP vs Sequential")
+        plt.grid(axis="y", alpha=0.3)
+        plt.legend()
+        plt.tight_layout()
+        plt.savefig(out_dir / "cycles_trend_smt_cmp_vs_sequential.png", dpi=160)
+        plt.close()
+
+    if threads_for_smt_cmp_wall:
+        baseline_wall = [baseline_wall_mean for _ in threads_for_smt_cmp_wall]
+
+        plt.figure(figsize=(10, 6))
+        plt.plot(threads_for_smt_cmp_wall, smt_wall, marker="o", linewidth=2.0, label="SMT")
+        plt.plot(threads_for_smt_cmp_wall, cmp_wall, marker="s", linewidth=2.0, label="CMP")
+        plt.plot(
+            threads_for_smt_cmp_wall,
+            baseline_wall,
+            linestyle="--",
+            linewidth=1.3,
+            color="black",
+            label="Sequential baseline",
+        )
+        plt.xticks(threads_for_smt_cmp_wall, [str(t) for t in threads_for_smt_cmp_wall])
         plt.xlabel("Thread count")
         plt.ylabel("Mean wall time (ms)")
         plt.title("Execution time trend vs thread count: SMT vs CMP")
@@ -380,7 +467,7 @@ def generate_plots(rows: List[RunRow], out_dir: Path) -> None:
     if warning_path.exists():
         warning_path.unlink()
 
-    # Focused figures only: cycle trend for FGMT/CGMT and wall-time trend for SMT/CMP.
+    # Focused figures for both pairs in both metrics (cycles and wall time).
 
 
 def main() -> int:
@@ -397,29 +484,43 @@ def main() -> int:
 
     rows: List[RunRow] = []
 
-    def run_config(cfg: Config) -> None:
-        print(f"  -> {cfg.name} ({cfg.strategy}, threads={cfg.threads}, quantum={cfg.quantum})")
-        for run_idx in range(args.runs):
-            wall_ms, total_cycles = run_single(args.runner, args.steps, args.particles, cfg)
-            rows.append(
-                RunRow(
-                    config_name=cfg.name,
-                    strategy=cfg.strategy,
-                    threads=cfg.threads,
-                    quantum=(cfg.quantum if cfg.quantum is not None else 0),
-                    run_index=run_idx,
-                    wall_ms=wall_ms,
-                    total_cycles=total_cycles,
-                )
+    def run_config_for_seed(cfg: Config, run_idx: int, seed: int) -> None:
+        wall_ms, total_cycles = run_single(args.runner, args.steps, args.particles, cfg, seed)
+        rows.append(
+            RunRow(
+                config_name=cfg.name,
+                strategy=cfg.strategy,
+                threads=cfg.threads,
+                quantum=(cfg.quantum if cfg.quantum is not None else 0),
+                run_index=run_idx,
+                seed=seed,
+                wall_ms=wall_ms,
+                total_cycles=total_cycles,
             )
+        )
 
     print(f"Running benchmark with {args.runs} repetitions per configuration...")
 
     non_cmp_configs = [cfg for cfg in configs if cfg.strategy != "cmp"]
     cmp_configs = [cfg for cfg in configs if cfg.strategy == "cmp"]
 
+    if args.seed_mode == "per-round":
+        print(f"Seed policy: round r uses seed = {args.seed_start} + r (same seed across all configs).")
+    else:
+        print(f"Seed policy: fixed seed = {args.seed_start} for all rounds/configs.")
+
+    def seed_for_run(run_idx: int) -> int:
+        if args.seed_mode == "fixed":
+            return args.seed_start
+        return args.seed_start + run_idx
+
     for cfg in non_cmp_configs:
-        run_config(cfg)
+        print(f"  -> {cfg.name} ({cfg.strategy}, threads={cfg.threads}, quantum={cfg.quantum})")
+
+    for run_idx in range(args.runs):
+        seed = seed_for_run(run_idx)
+        for cfg in non_cmp_configs:
+            run_config_for_seed(cfg, run_idx, seed)
 
     if cmp_configs:
         if args.cmp_disable_smt:
@@ -427,14 +528,44 @@ def main() -> int:
             set_smt_state("off", args.smt_control_path, args.smt_use_sudo)
         try:
             for cfg in cmp_configs:
-                run_config(cfg)
+                print(f"  -> {cfg.name} ({cfg.strategy}, threads={cfg.threads}, quantum={cfg.quantum})")
+            for run_idx in range(args.runs):
+                seed = seed_for_run(run_idx)
+                for cfg in cmp_configs:
+                    run_config_for_seed(cfg, run_idx, seed)
         finally:
             if args.cmp_disable_smt:
                 print("  -> Re-enabling SMT after CMP runs...")
                 set_smt_state("on", args.smt_control_path, args.smt_use_sudo)
 
     raw_path = out_dir / "raw_runs.csv"
-    write_raw_csv(rows, raw_path)
+    with raw_path.open("w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(
+            [
+                "config_name",
+                "strategy",
+                "threads",
+                "quantum",
+                "run_index",
+                "seed",
+                "wall_ms",
+                "total_cycles",
+            ]
+        )
+        for r in rows:
+            writer.writerow(
+                [
+                    r.config_name,
+                    r.strategy,
+                    r.threads,
+                    r.quantum,
+                    r.run_index,
+                    r.seed,
+                    f"{r.wall_ms:.6f}",
+                    r.total_cycles,
+                ]
+            )
 
     write_summary_and_convergence(rows, out_dir)
     generate_plots(rows, out_dir)
@@ -445,7 +576,5 @@ def main() -> int:
     print(f"- Convergence: {out_dir / 'convergence_report.txt'}")
     print(f"- Plots: {out_dir}")
     return 0
-
-
 if __name__ == "__main__":
     sys.exit(main())

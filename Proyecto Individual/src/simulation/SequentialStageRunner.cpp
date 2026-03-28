@@ -1,7 +1,9 @@
 #include "simulation/SequentialStageRunner.h"
 #include "threads/FGMTRoundRobinStrategy.h"
 #include "threads/ParallelChunkedThreadStrategy.h"
+#include "threads/CMPThreadStrategy.h"
 #include "threads/SequentialThreadStrategy.h"
+#include "threads/SMTThreadStrategy.h"
 
 #include <algorithm>
 #include <atomic>
@@ -614,12 +616,32 @@ void SequentialStageRunner::estimateStageStallBreakdown(
     const bool isSequential = dynamic_cast<const th::SequentialThreadStrategy*>(strategy_.get()) != nullptr;
     const bool isChunked = dynamic_cast<const th::ParallelChunkedThreadStrategy*>(strategy_.get()) != nullptr;
     const auto* fgmt = dynamic_cast<const th::FGMTRoundRobinStrategy*>(strategy_.get());
+    const bool isSmt = dynamic_cast<const th::SMTThreadStrategy*>(strategy_.get()) != nullptr;
+    const bool isCmp = dynamic_cast<const th::CMPThreadStrategy*>(strategy_.get()) != nullptr;
+
+    // Calibration knobs (v1): tuned to bring simulated cycle trends closer to observed
+    // real-machine behavior under thread contention. Keep these explicit for report traceability.
+    constexpr CycleCount kFgContextPerQuantum = 16ULL;
+    constexpr CycleCount kFgContextPerWorker = 18ULL;
+    constexpr CycleCount kCgContextPerWorker = 40ULL;
+    constexpr CycleCount kCgContextStepJitter = 20ULL;
+    constexpr CycleCount kSmtContextPerWorker = 54ULL;
+    constexpr CycleCount kCmpContextPerWorker = 62ULL;
+    constexpr CycleCount kSmtBasePenalty = 140ULL;
+    constexpr CycleCount kCmpBasePenalty = 175ULL;
 
     const CycleCount stageBase = (stage == StageId::DensityPressure) ? 120ULL : 180ULL;
     const CycleCount memoryStalls = candidateChecks * ((stage == StageId::DensityPressure) ? 2ULL : 3ULL);
     const CycleCount interactionStalls = interactions * ((stage == StageId::DensityPressure) ? 1ULL : 2ULL);
     const CycleCount jitter = static_cast<CycleCount>((config_.seed + 17 * stepIndex + static_cast<int>(stage)) % 7);
-    const CycleCount rawStallCycles = stageBase + memoryStalls + interactionStalls + jitter * 15ULL;
+    CycleCount rawStallCycles = stageBase + memoryStalls + interactionStalls + jitter * 15ULL;
+
+    // Apply a contention-oriented penalty for real-thread strategies.
+    if (isSmt) {
+        rawStallCycles += kSmtBasePenalty + static_cast<CycleCount>(workers) * 14ULL;
+    } else if (isCmp) {
+        rawStallCycles += kCmpBasePenalty + static_cast<CycleCount>(workers) * 18ULL;
+    }
 
     if (isSequential) {
         exposedStallCycles = rawStallCycles;
@@ -634,7 +656,7 @@ void SequentialStageRunner::estimateStageStallBreakdown(
 
         const int quantum = std::max(1, fgmt->quantumItems());
         const CycleCount quanta = static_cast<CycleCount>((itemCount + quantum - 1) / quantum);
-        contextSwitchCycles = quanta * 16ULL + static_cast<CycleCount>(workers) * 18ULL;
+        contextSwitchCycles = quanta * kFgContextPerQuantum + static_cast<CycleCount>(workers) * kFgContextPerWorker;
         return;
     }
 
@@ -644,7 +666,28 @@ void SequentialStageRunner::estimateStageStallBreakdown(
         hiddenStallCycles = (rawStallCycles * hiddenPercent) / 100ULL;
         exposedStallCycles = rawStallCycles - hiddenStallCycles;
 
-        contextSwitchCycles = static_cast<CycleCount>(workers) * 40ULL + static_cast<CycleCount>((stepIndex % 3) + 1) * 20ULL;
+        contextSwitchCycles = static_cast<CycleCount>(workers) * kCgContextPerWorker +
+                              static_cast<CycleCount>((stepIndex % 3) + 1) * kCgContextStepJitter;
+        return;
+    }
+
+    if (isSmt) {
+        const CycleCount workerTerm = static_cast<CycleCount>(std::max(0, workers - 1));
+        const CycleCount hiddenPercent = std::min<CycleCount>(55ULL, 20ULL + workerTerm * 8ULL);
+        hiddenStallCycles = (rawStallCycles * hiddenPercent) / 100ULL;
+        exposedStallCycles = rawStallCycles - hiddenStallCycles;
+        contextSwitchCycles = static_cast<CycleCount>(workers) * kSmtContextPerWorker +
+                              static_cast<CycleCount>((stepIndex % 4) + 1) * 12ULL;
+        return;
+    }
+
+    if (isCmp) {
+        const CycleCount workerTerm = static_cast<CycleCount>(std::max(0, workers - 1));
+        const CycleCount hiddenPercent = std::min<CycleCount>(42ULL, 12ULL + workerTerm * 6ULL);
+        hiddenStallCycles = (rawStallCycles * hiddenPercent) / 100ULL;
+        exposedStallCycles = rawStallCycles - hiddenStallCycles;
+        contextSwitchCycles = static_cast<CycleCount>(workers) * kCmpContextPerWorker +
+                              static_cast<CycleCount>((stepIndex % 5) + 1) * 16ULL;
         return;
     }
 
