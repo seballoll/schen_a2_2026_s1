@@ -39,3 +39,10 @@
 
 # debug information files
 *.dwo
+
+# Project-local folders
+.vscode/
+build_root_test/
+build_vscode/
+.venv/
+benchmark_artifacts/
