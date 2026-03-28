@@ -2,6 +2,9 @@
 
 Guia practica para ejecutar benchmarks y generar artefactos (CSV + graficos) el dia de la defensa.
 
+Navegacion de codigo/teoria para la exposicion:
+- [NAVEGACION_DEFENSA.md](NAVEGACION_DEFENSA.md)
+
 ## 1) Pre-chequeo rapido
 
 Ejecutar desde la raiz del repo.

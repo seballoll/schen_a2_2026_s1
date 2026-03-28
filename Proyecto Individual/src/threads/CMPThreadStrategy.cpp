@@ -6,14 +6,17 @@
 
 namespace th {
 
+// ======== MODEL IDENTIFICATION ========
 std::string CMPThreadStrategy::name() const {
     return "CMP-RealThreads";
 }
 
+// ======== CONFIGURATION ========
 void CMPThreadStrategy::configure(int workers) {
     workers_ = std::max(1, workers);
 }
 
+// ======== EXECUTION POLICY: STATIC CHUNK PER WORKER ========
 void CMPThreadStrategy::runForRange(int itemCount, const Task& task) {
     if (itemCount <= 0) return;
 
@@ -40,6 +43,7 @@ void CMPThreadStrategy::runForRange(int itemCount, const Task& task) {
     }
 }
 
+// ======== BARRIER SEMANTICS ========
 void CMPThreadStrategy::barrier() {
     // Per-stage join in runForRange already acts as a barrier.
 }

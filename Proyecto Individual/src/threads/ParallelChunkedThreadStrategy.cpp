@@ -5,14 +5,17 @@
 
 namespace th {
 
+// ======== MODEL IDENTIFICATION ========
 std::string ParallelChunkedThreadStrategy::name() const {
     return "ParallelChunked";
 }
 
+// ======== CONFIGURATION ========
 void ParallelChunkedThreadStrategy::configure(int workers) {
     workers_ = std::max(1, workers);
 }
 
+// ======== EXECUTION POLICY: COARSE CHUNKS + COOPERATIVE YIELD ========
 void ParallelChunkedThreadStrategy::runForRange(int itemCount, const Task& task) {
     if (itemCount <= 0) return;
 
@@ -78,10 +81,12 @@ void ParallelChunkedThreadStrategy::runForRange(int itemCount, const Task& task)
     }
 }
 
+// ======== BARRIER SEMANTICS ========
 void ParallelChunkedThreadStrategy::barrier() {
     // No-op in simulated CGMT.
 }
 
+// ======== SYNTHETIC STALL SIGNAL ========
 bool ParallelChunkedThreadStrategy::shouldYieldOnStall(int workerId, int cursor) const {
     // Deterministic synthetic stall event used only for controlled scheduler simulation.
     const int signature = (cursor / 8) + workerId * 5 + workers_ * 3;

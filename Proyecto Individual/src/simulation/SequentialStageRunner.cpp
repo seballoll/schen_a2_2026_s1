@@ -55,6 +55,7 @@ SequentialStageRunner::SequentialStageRunner(std::unique_ptr<th::ThreadStrategyC
     }
 }
 
+// ======== RUNNER LIFECYCLE: INITIALIZE / STEP LOOP / METRICS ========
 void SequentialStageRunner::initialize(const RunConfig& config) {
     config_ = config;
 
@@ -161,6 +162,7 @@ StageMetrics& SequentialStageRunner::stageMetricsRef(StageId stage) {
     throw std::runtime_error("Etapa no encontrada en stageMetricsRef");
 }
 
+// ======== PIPELINE DISPATCH: MAP STAGE ID -> EXECUTION FUNCTION ========
 void SequentialStageRunner::executeStageSynthetic(StageId stage, int stepIndex) {
     auto& m = stageMetricsRef(stage);
 
@@ -217,6 +219,7 @@ void SequentialStageRunner::executeStageSynthetic(StageId stage, int stepIndex) 
     m.totalCycles += workCycles + exposedStallCycles;
 }
 
+// ======== STAGE 1: NEIGHBOUR STRUCTURE (GRID BUILD) ========
 void SequentialStageRunner::executeNeighbourStructureReal(StageMetrics& metrics) {
     const auto t0 = std::chrono::steady_clock::now();
 
@@ -245,6 +248,7 @@ void SequentialStageRunner::executeNeighbourStructureReal(StageMetrics& metrics)
     metrics.totalCycles += workCycles;
 }
 
+// ======== STAGE 2: DENSITY + PRESSURE ========
 void SequentialStageRunner::executeDensityPressureReal(StageMetrics& metrics, int stepIndex) {
     const auto t0 = std::chrono::steady_clock::now();
 
@@ -324,6 +328,7 @@ void SequentialStageRunner::executeDensityPressureReal(StageMetrics& metrics, in
     metrics.totalCycles += workCycles + contextSwitchCycles + exposedStallCycles;
 }
 
+// ======== STAGE 3: FORCES ========
 void SequentialStageRunner::executeForcesReal(StageMetrics& metrics, int stepIndex) {
     const auto t0 = std::chrono::steady_clock::now();
 
@@ -424,6 +429,7 @@ void SequentialStageRunner::executeForcesReal(StageMetrics& metrics, int stepInd
     metrics.totalCycles += workCycles + contextSwitchCycles + exposedStallCycles;
 }
 
+// ======== STAGE 4: INTEGRATE ========
 void SequentialStageRunner::executeIntegrateReal(StageMetrics& metrics) {
     const auto t0 = std::chrono::steady_clock::now();
 
@@ -464,6 +470,7 @@ void SequentialStageRunner::executeIntegrateReal(StageMetrics& metrics) {
     metrics.totalCycles += workCycles;
 }
 
+// ======== STAGE 5: BOUNDARY ========
 void SequentialStageRunner::executeBoundaryReal(StageMetrics& metrics) {
     const auto t0 = std::chrono::steady_clock::now();
 
@@ -509,6 +516,7 @@ void SequentialStageRunner::executeBoundaryReal(StageMetrics& metrics) {
     metrics.totalCycles += workCycles;
 }
 
+// ======== STAGE 6: METRICS SNAPSHOT ========
 void SequentialStageRunner::executeMetricsReal(StageMetrics& metrics, int stepIndex) {
     const auto t0 = std::chrono::steady_clock::now();
 
@@ -562,6 +570,7 @@ void SequentialStageRunner::executeMetricsReal(StageMetrics& metrics, int stepIn
     metrics.totalCycles += workCycles;
 }
 
+// ======== SYNTHETIC CYCLE MODEL: BASE WORK + STALLS ========
 CycleCount SequentialStageRunner::baseCyclesPerParticle(StageId stage) const {
     switch (stage) {
         case StageId::NeighbourStructure: return 14;
@@ -595,6 +604,7 @@ int SequentialStageRunner::activeWorkersForCycles(int itemCount) const {
     return std::max(1, std::min(requestedWorkers, itemCount));
 }
 
+// ======== SYNTHETIC STALL BREAKDOWN PER EXECUTION MODEL ========
 void SequentialStageRunner::estimateStageStallBreakdown(
     StageId stage,
     int stepIndex,
@@ -694,6 +704,7 @@ void SequentialStageRunner::estimateStageStallBreakdown(
     exposedStallCycles = rawStallCycles;
 }
 
+// ======== SPATIAL HELPERS: CELL CLAMP / INDEX / NEIGHBOUR BOUNDS ========
 int SequentialStageRunner::clampCellX(int cellX) const {
     if (cellX < 0) return 0;
     if (cellX >= gridWidth_) return gridWidth_ - 1;

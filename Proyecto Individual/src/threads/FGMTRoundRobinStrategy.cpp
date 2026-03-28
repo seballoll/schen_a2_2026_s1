@@ -4,17 +4,21 @@
 
 namespace th {
 
+// ======== CONSTRUCTOR / QUANTUM SETUP ========
 FGMTRoundRobinStrategy::FGMTRoundRobinStrategy(int quantumItems)
     : quantumItems_(std::max(1, quantumItems)) {}
 
+// ======== MODEL IDENTIFICATION ========
 std::string FGMTRoundRobinStrategy::name() const {
     return "FGMT-RoundRobin";
 }
 
+// ======== CONFIGURATION ========
 void FGMTRoundRobinStrategy::configure(int workers) {
     workers_ = std::max(1, workers);
 }
 
+// ======== EXECUTION POLICY: ROUND-ROBIN QUANTA ========
 void FGMTRoundRobinStrategy::runForRange(int itemCount, const Task& task) {
     if (itemCount <= 0) return;
 
@@ -32,10 +36,12 @@ void FGMTRoundRobinStrategy::runForRange(int itemCount, const Task& task) {
     }
 }
 
+// ======== BARRIER SEMANTICS ========
 void FGMTRoundRobinStrategy::barrier() {
     // No-op in simulated FGMT: switching happens during runForRange.
 }
 
+// ======== MODEL PARAMETERS ========
 int FGMTRoundRobinStrategy::quantumItems() const {
     return quantumItems_;
 }

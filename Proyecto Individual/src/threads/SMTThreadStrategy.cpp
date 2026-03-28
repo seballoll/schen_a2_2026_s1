@@ -7,14 +7,17 @@
 
 namespace th {
 
+// ======== MODEL IDENTIFICATION ========
 std::string SMTThreadStrategy::name() const {
     return "SMT-RealThreads";
 }
 
+// ======== CONFIGURATION ========
 void SMTThreadStrategy::configure(int workers) {
     workers_ = std::max(1, workers);
 }
 
+// ======== EXECUTION POLICY: DYNAMIC WORK-STEAL LIKE CHUNKING ========
 void SMTThreadStrategy::runForRange(int itemCount, const Task& task) {
     if (itemCount <= 0) return;
 
@@ -42,6 +45,7 @@ void SMTThreadStrategy::runForRange(int itemCount, const Task& task) {
     }
 }
 
+// ======== BARRIER SEMANTICS ========
 void SMTThreadStrategy::barrier() {
     // Per-stage join in runForRange already acts as a barrier.
 }
